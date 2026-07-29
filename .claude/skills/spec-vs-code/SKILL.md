@@ -12,7 +12,8 @@ Recoupe une spec avec le code des dépôts clonés dans `repos/`. Lecture seule 
 - `/spec-vs-code <clé Jira | page Confluence>` pour vérifier « le code fait-il ce que dit la spec ».
 
 ## Prérequis
-- Dépôts présents dans `repos/` (voir CLAUDE.md). S'ils sont vides ou quasi vides (état actuel : « Initial commit »), le dire franchement : il n'y a rien à recouper, et s'arrêter (fail-fast).
+- Dépôts présents et remplis dans `repos/` (voir CLAUDE.md). S'ils sont vides ou quasi vides, le dire franchement : il n'y a rien à recouper, et s'arrêter (fail-fast).
+- **Clones à jour** : appliquer le contrôle de fraîcheur de CLAUDE.md (« Fraîcheur des clones ») sur `sln-smt-backend` et `sln-smt-console` avant l'étape 3. Un clone en retard invalide la comparaison : le rapport conclurait sur du code qui n'existe plus. En retard, `fetch` impossible ou working tree non vide : s'arrêter et le signaler.
 
 ## Étapes
 1. Charger la spec (Confluence via MCP) et la story / epic Jira liée. Résoudre le vocabulaire via le glossaire.

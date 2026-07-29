@@ -70,6 +70,37 @@ survolé.
   garantir ce qui est réellement déployé.
 - Recouper le code avec les specs (Confluence) et le découpage (Jira) ; signaler tout écart.
 
+#### Fraîcheur des clones : contrôle obligatoire
+
+Un clone périmé fait répondre faux, sans aucun signal. C'est le pire cas : la réponse a l'air sourcée
+alors qu'elle décrit un code qui n'existe plus. Avant toute comparaison spec / code, vérifier la
+fraîcheur, pour chaque dépôt concerné :
+
+```
+git -C repos/<dépôt> fetch --quiet
+git -C repos/<dépôt> rev-list --count 'HEAD..@{u}'   # commits de retard ; 0 = à jour
+git -C repos/<dépôt> status --porcelain              # doit être vide (lecture seule)
+```
+
+Quoter `'HEAD..@{u}'` : non quoté, PowerShell lit `@{u}` comme une table de hachage et échoue. Si
+l'upstream n'existe pas (HEAD détachée, branche sans suivi), se rabattre sur `'HEAD..origin/HEAD'`.
+
+Interprétation, en fail-fast :
+
+- **0 commit de retard** : continuer.
+- **En retard** : STOP. Dire de combien de commits et depuis quelle date
+  (`git log -1 --format=%cI '@{u}'`), puis demander un rafraîchissement. Ne jamais rafraîchir
+  soi-même : `git pull` modifie le checkout, ce qui sort du périmètre lecture seule. Ne poursuivre
+  que si l'utilisateur accepte explicitement de raisonner sur un clone périmé, et le rappeler dans la
+  sortie.
+- **`fetch` impossible** (réseau, VPN, authentification) : STOP. La fraîcheur est invérifiable, donc
+  toute conclusion sur le code est invérifiable.
+- **Working tree non vide** : anomalie vis-à-vis du périmètre lecture seule. Le signaler avant de
+  continuer, car le code lu ne correspond alors plus à ce qui est versionné.
+
+Côté utilisateur, `scripts/bootstrap.ps1` applique ce même contrôle sur les deux dépôts d'un coup, et
+les rafraîchit avec `-Update`. C'est le moyen à conseiller plutôt que des commandes à la main.
+
 ## Configuration MCP (partagée via le dépôt)
 
 Confluence et Jira sont atteints via le MCP Atlassian, déclaré dans le `.mcp.json` de portée projet
@@ -117,7 +148,9 @@ Le nom d'invocation d'un skill est celui de son dossier (pas un alias) ; celui d
 nom de fichier dans `.claude/commands/`.
 
 Les skills qui touchent au code (`spec-vs-code`, `doc-freshness`, `refactor-proposal`) supposent des
-dépôts remplis dans `repos/` ; tant qu'ils sont quasi vides, elles le signalent (fail-fast).
+dépôts présents, remplis et à jour dans `repos/`. Si l'un de ces trois points manque, elles le
+signalent et s'arrêtent (fail-fast) plutôt que de conclure sur un code absent ou périmé : voir
+« Fraîcheur des clones ».
 
 ### Lecture seule : ce qui est réellement appliqué
 
@@ -136,6 +169,14 @@ Limites connues, à garder en tête :
 - L'héritage des permissions par les sous-agents est réputé peu fiable. Pour `code-explorer`, la
   vraie garantie reste sa liste `tools:` (Read, Grep, Glob) : il ne dispose d'aucun outil
   d'écriture.
+
+## Documentation du projet
+
+- `docs/acces-non-dev.md` : cadrage de l'accès des profils sans VSCode, grille de décision et piste
+  retenue (Claude Code hors VSCode).
+- `docs/demarrage-non-dev.md` : guide d'installation pas à pas pour un profil non-dev.
+- `scripts/bootstrap.ps1` : provisionne et contrôle un poste (clones `repos/`, fraîcheur). Lecture
+  seule vis-à-vis de GitLab ; ne rafraîchit qu'avec `-Update`.
 
 ## Langue et typographie
 

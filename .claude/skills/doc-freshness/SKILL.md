@@ -13,6 +13,7 @@ Vérifie qu'une page Confluence reflète encore le code. Lecture seule : propose
 
 ## Prérequis
 - Dépôts présents dans `repos/`. S'ils sont vides, le signaler (rien à comparer).
+- **Clones à jour** : appliquer le contrôle de fraîcheur de CLAUDE.md (« Fraîcheur des clones ») avant l'étape 2. Ce skill mesure la péremption d'une page : le faire depuis un clone périmé produirait l'erreur exacte qu'il cherche à détecter. En retard, `fetch` impossible ou working tree non vide : s'arrêter et le signaler.
 
 ## Étapes
 1. Charger la page Confluence (MCP) et repérer ses affirmations vérifiables (endpoints, flux, noms, configs).
