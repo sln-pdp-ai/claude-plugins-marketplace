@@ -1,0 +1,27 @@
+---
+name: spec-vs-code
+description: Comparer une spec (Confluence/Jira) au code réellement présent dans les dépôts SMT et lister les écarts. Délègue l'exploration du code au sous-agent code-explorer. Lecture seule.
+model: opus
+---
+
+# spec-vs-code
+
+Recoupe une spec avec le code des dépôts clonés dans `repos/`. Lecture seule : rapport dans le chat, aucune écriture, aucun commit.
+
+## Quand l'utiliser
+- `/check-spec <clé Jira | page Confluence>` pour vérifier « le code fait-il ce que dit la spec ».
+
+## Prérequis
+- Dépôts présents dans `repos/` (voir CLAUDE.md). S'ils sont vides ou quasi vides (état actuel : « Initial commit »), le dire franchement : il n'y a rien à recouper, et s'arrêter (fail-fast).
+
+## Étapes
+1. Charger la spec (Confluence via MCP) et la story / epic Jira liée. Résoudre le vocabulaire via le glossaire.
+2. Extraire les règles vérifiables de la spec (comportements, contraintes, contrats).
+3. Déléguer au sous-agent `code-explorer` (lecture seule) : lui donner les règles à chercher dans `repos/sln-smt-backend` et `repos/sln-smt-console`, et demander une synthèse « règle : présence / absence dans le code, avec fichier:ligne ».
+4. Confronter : pour chaque règle : IMPLÉMENTÉ / PARTIEL / ABSENT / DIVERGENT.
+5. Fail-fast : si la spec est ambiguë au point de rendre la comparaison impossible, s'arrêter et le signaler.
+
+## Format de sortie (français, dans le chat)
+- Tableau : Règle (spec, citée) | Statut | Preuve code (`fichier:ligne`) | Écart.
+- Synthèse des divergences et des zones non couvertes.
+- Toujours citer les deux côtés (spec + code). Ne rien affirmer sans preuve.
