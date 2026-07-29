@@ -9,7 +9,7 @@ model: opus
 Recoupe une spec avec le code des dépôts clonés dans `repos/`. Lecture seule : rapport dans le chat, aucune écriture, aucun commit.
 
 ## Quand l'utiliser
-- `/check-spec <clé Jira | page Confluence>` pour vérifier « le code fait-il ce que dit la spec ».
+- `/spec-vs-code <clé Jira | page Confluence>` pour vérifier « le code fait-il ce que dit la spec ».
 
 ## Prérequis
 - Dépôts présents dans `repos/` (voir CLAUDE.md). S'ils sont vides ou quasi vides (état actuel : « Initial commit »), le dire franchement : il n'y a rien à recouper, et s'arrêter (fail-fast).

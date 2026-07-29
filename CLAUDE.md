@@ -90,7 +90,9 @@ Les jetons sont stockés localement, par utilisateur, et ne sont jamais commité
 - Toujours étayer une affirmation par une source : citer la page Confluence, la clé Jira, ou
   `fichier:ligne`. Ne jamais affirmer un fait sans source.
 - Si des détails manquent, ne pas les inventer ; appliquer le fail-fast et demander.
-- Rester en lecture seule : ne jamais écrire dans Confluence, Jira ou GitLab ; ne jamais commiter.
+- Rester en lecture seule sur les trois sources : ne jamais écrire dans Confluence ou Jira, ne jamais
+  modifier ni commiter le code des checkouts `repos/`. Ce dépôt-ci (les instructions) est versionné
+  normalement : y commiter est légitime, sur demande.
 - Note de périmètre : rédiger le découpage epics / stories est hors périmètre (lecture seule).
   L'activer serait un changement de périmètre (lecture-écriture) à rediscuter explicitement.
 
@@ -104,14 +106,36 @@ Toutes respectent le périmètre lecture seule : elles produisent un rapport dan
 | Élément | Type | Invocation | Rôle |
 |---|---|---|---|
 | `term-check` | skill (haiku) | `/term-check <page/story/texte>` | Cohérence des termes avec le glossaire |
-| `spec-readiness` | skill (sonnet) | `/spec-review <epic/story/page>` | Check-list fail-fast « prêt pour le dev » |
-| `spec-vs-code` | skill (opus) | `/check-spec <clé/page>` | Écarts entre la spec et le code de `repos/` |
-| `doc-freshness` | skill (sonnet) | `/doc-refresh <page>` | Doc Confluence périmée vs code |
-| `refactor-proposal` | skill (opus) | `/propose-refactor <zone>` | Propositions de refactoring (non appliquées) |
-| `code-explorer` | sous-agent (opus) | délégation | Lecture seule de `repos/`, rend une synthèse `fichier:ligne` |
+| `spec-readiness` | skill (sonnet) | `/spec-readiness <epic/story/page>` | Check-list fail-fast « prêt pour le dev » |
+| `spec-vs-code` | skill (opus) | `/spec-vs-code <clé/page>` | Écarts entre la spec et le code de `repos/` |
+| `doc-freshness` | skill (sonnet) | `/doc-freshness <page>` | Doc Confluence périmée vs code |
+| `refactor-proposal` | skill (opus) | `/refactor-proposal <zone>` | Propositions de refactoring (non appliquées) |
+| `explore-code` | commande | `/explore-code <question/zone>` | Lance directement `code-explorer` sur `repos/` |
+| `code-explorer` | sous-agent (opus) | délégation ou `/explore-code` | Lecture seule de `repos/`, rend une synthèse `fichier:ligne` |
+
+Le nom d'invocation d'un skill est celui de son dossier (pas un alias) ; celui d'une commande est son
+nom de fichier dans `.claude/commands/`.
 
 Les skills qui touchent au code (`spec-vs-code`, `doc-freshness`, `refactor-proposal`) supposent des
 dépôts remplis dans `repos/` ; tant qu'ils sont quasi vides, elles le signalent (fail-fast).
+
+### Lecture seule : ce qui est réellement appliqué
+
+Le `.claude/settings.json` du dépôt (commité, donc partagé) contient des règles `permissions.deny`
+qui bloquent techniquement les outils d'écriture Atlassian (création / mise à jour de page, création
+/ édition / transition d'issue, commentaires, liens) et toute modification sous `repos/`. Les règles
+`deny` priment sur tout `allow` et ne peuvent pas être annulées par un `settings.local.json`.
+
+Limites connues, à garder en tête :
+- Les outils d'écriture sont énumérés nommément (le support des jokers sur les noms d'outils MCP
+  n'est pas fiable). Si un nouvel outil d'écriture apparaît côté MCP, il faut l'ajouter à la liste.
+- Le périmètre d'une règle `Bash` porte sur la commande, pas sur le répertoire : impossible
+  d'interdire `git commit` uniquement dans `repos/`. La protection de `repos/` repose donc sur les
+  règles `Edit` / `Write`, et aucune interdiction globale de `git commit` n'est posée (elle
+  casserait le versionnement légitime de ce dépôt).
+- L'héritage des permissions par les sous-agents est réputé peu fiable. Pour `code-explorer`, la
+  vraie garantie reste sa liste `tools:` (Read, Grep, Glob) : il ne dispose d'aucun outil
+  d'écriture.
 
 ## Langue et typographie
 

@@ -9,7 +9,7 @@ model: sonnet
 Vérifie qu'une page Confluence reflète encore le code. Lecture seule : propose, n'écrit rien (ni Confluence, ni fichiers).
 
 ## Quand l'utiliser
-- `/doc-refresh <page Confluence>` (optionnellement une zone de code cible).
+- `/doc-freshness <page Confluence>` (optionnellement une zone de code cible).
 
 ## Prérequis
 - Dépôts présents dans `repos/`. S'ils sont vides, le signaler (rien à comparer).

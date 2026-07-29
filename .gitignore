@@ -1,2 +1,5 @@
 # Checkouts locaux en lecture seule des dépôts SMT (non suivis ici)
 repos/
+
+# Réglages Claude Code propres à chaque utilisateur (approbations MCP, permissions locales)
+.claude/settings.local.json

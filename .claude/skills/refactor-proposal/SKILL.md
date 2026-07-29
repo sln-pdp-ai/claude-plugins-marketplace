@@ -9,7 +9,7 @@ model: opus
 Propose des refactorings sur le code de `repos/`. Lecture seule stricte : ne modifie aucun fichier, ne commite pas. Sortie = proposition dans le chat.
 
 ## Quand l'utiliser
-- `/propose-refactor <zone : chemin, module, ou description>`.
+- `/refactor-proposal <zone : chemin, module, ou description>`.
 
 ## Prérequis
 - Dépôts présents dans `repos/`. S'ils sont vides, le signaler.
