@@ -128,20 +128,26 @@ couvre aujourd'hui l'ensemble du périmètre sans rien construire. Il est levé.
 - Chacun agit sous son identité (OAuth Atlassian et identifiants GitLab personnels) : droits et
   traçabilité natifs. Une identité de service partagée casserait cela et doit être décidée
   explicitement.
-- Données dans le tenant Amer Sports. Pas de PII ni de données sensibles dans les sorties ou
-  artefacts.
+- Les **données lues** restent chez Amer Sports : specs et issues dans le tenant Atlassian, code sur
+  `gitlab.amersports.com` et dans les clones locaux. Rien n'est recopié ailleurs.
+- Les **instructions**, elles, sont hébergées sur un GitHub privé, hors tenant. Le dépôt ne contient
+  ni secret, ni code, ni PII, mais il expose des éléments internes : URL GitLab, chemins des dépôts,
+  nom de l'espace Confluence, structure du projet. À faire valider si la politique interne encadre la
+  publication de ce type d'information sur une plateforme externe.
+- Pas de PII ni de données sensibles dans les sorties ou artefacts.
 
 ## Risques et questions ouvertes
 
-- **Bloquant : ce dépôt n'est publié nulle part.** `sln-smt-assistant` n'a aucun remote git ; il
-  n'existe que sur le poste de l'architecte. Personne ne peut donc le récupérer, ce qui bloque la
-  piste 0 à sa toute première étape. À créer sur `gitlab.amersports.com`, à côté des dépôts SMT, puis
-  à pousser. Prérequis à tout pilote.
+- **Publication du dépôt : levée.** `sln-smt-assistant` est publié sur un GitHub privé, sous
+  l'organisation SLNAS (<https://github.com/SLNAS/sln-smt-assistant>, branche `main`).
+  L'administration n'est donc pas liée à une personne. Reste à accorder l'accès nominativement à
+  chaque utilisateur.
 - **Fraîcheur des clones.** Traité : le contrôle est décrit dans `CLAUDE.md` (« Fraîcheur des
   clones ») et exigé en prérequis par `spec-vs-code`, `doc-freshness` et `refactor-proposal`, qui
   refusent désormais de conclure sur un clone en retard, non vérifiable ou modifié.
-- **Prérequis à provisionner** par personne : siège Claude, compte GitLab avec accès aux deux dépôts,
-  compte Atlassian.
+- **Prérequis à provisionner** par personne : siège Claude, accès au dépôt GitHub de l'assistant,
+  compte GitLab avec accès aux deux dépôts SMT, compte Atlassian. Soit trois authentifications
+  distinctes à l'installation.
 - **Détails à valider en pilote** : approbation du MCP de projet dans l'app desktop, prise en compte
   de `.claude/settings.json` et des skills, disponibilité de l'app sur les postes Amer Sports.
 - **Seuil de bascule vers la piste 3** : à partir de combien d'utilisateurs l'install par poste
@@ -149,10 +155,9 @@ couvre aujourd'hui l'ensemble du périmètre sans rien construire. Il est levé.
 
 ## Prochaines étapes
 
-1. **Publier ce dépôt sur GitLab.** Bloquant : sans cela, rien d'autre n'est possible.
-2. Pilote de la piste 0 sur un poste non-dev, en suivant
+1. Pilote de la piste 0 sur un poste non-dev, en suivant
    [demarrage-non-dev.md](demarrage-non-dev.md).
-3. En parallèle : relance de l'admin GitLab sur le MCP officiel (débloqueur (a)).
+2. En parallèle : relance de l'admin GitLab sur le MCP officiel (débloqueur (a)).
 
-Outillage déjà en place pour le pilote : `scripts/bootstrap.ps1` (provisionne et contrôle un poste)
-et [demarrage-non-dev.md](demarrage-non-dev.md) (guide pas à pas).
+Déjà en place : le dépôt publié sur GitHub privé, `scripts/bootstrap.ps1` (provisionne et contrôle un
+poste) et [demarrage-non-dev.md](demarrage-non-dev.md) (guide pas à pas).

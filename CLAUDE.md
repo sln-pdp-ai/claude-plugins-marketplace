@@ -123,7 +123,9 @@ Les jetons sont stockés localement, par utilisateur, et ne sont jamais commité
 - Si des détails manquent, ne pas les inventer ; appliquer le fail-fast et demander.
 - Rester en lecture seule sur les trois sources : ne jamais écrire dans Confluence ou Jira, ne jamais
   modifier ni commiter le code des checkouts `repos/`. Ce dépôt-ci (les instructions) est versionné
-  normalement : y commiter est légitime, sur demande.
+  normalement sur un GitHub privé (<https://github.com/SLNAS/sln-smt-assistant>, branche `main`) :
+  y commiter est légitime, sur demande. Ne pas confondre avec les dépôts GitLab de `repos/`, qui sont
+  en lecture seule.
 - Note de périmètre : rédiger le découpage epics / stories est hors périmètre (lecture seule).
   L'activer serait un changement de périmètre (lecture-écriture) à rediscuter explicitement.
 
