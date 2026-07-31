@@ -12,23 +12,23 @@ Cadrage et justification du choix : [acces-non-dev.md](acces-non-dev.md).
 | Quoi | Auprès de qui | Pour quoi |
 |---|---|---|
 | Un siège Claude | Équipe IT / licences | Utiliser Claude Code |
-| L'accès au dépôt GitHub privé de l'assistant | L'architecte | Récupérer l'assistant |
+| L'accès au projet GitLab de l'assistant (`pdp/ai`) | L'architecte | Récupérer l'assistant |
 | Un compte GitLab avec accès aux deux dépôts SMT | Owner des dépôts | Lire le code |
 | Un compte Atlassian Amer Sports | Déjà en place en général | Lire Confluence et Jira |
 | Accès réseau à `gitlab.amersports.com` | VPN si hors site | Cloner et rafraîchir le code |
 
 ## Où vit l'assistant
 
-Le projet est publié sur un dépôt GitHub **privé** de l'organisation **SLNAS** :
-<https://github.com/SLNAS/sln-smt-assistant>, branche `main`.
+Le projet est publié sur `gitlab.amersports.com`, dans le groupe **`pdp/ai`** :
+<https://gitlab.amersports.com/pdp/ai/sln-smt-assistant>, branche `main`.
 
 Deux conséquences pratiques :
 
-- L'accès au dépôt doit vous être donné avant de commencer. Le demander en même temps que les autres
+- L'accès au projet doit vous être donné avant de commencer. Le demander en même temps que les autres
   prérequis, sinon l'étape 3 échoue sur un « repository not found ».
-- Vous aurez **deux authentifications distinctes** : GitHub pour l'assistant lui-même (étape 3),
-  GitLab pour le code SMT (étape 4). Ce sont deux comptes différents, chacun demandé une fois puis
-  mémorisé.
+- Un **seul compte** suffit : le même GitLab sert pour l'assistant (étape 3) et pour le code SMT
+  (étape 4). Les identifiants sont demandés une fois puis mémorisés. Il faut en revanche l'accès
+  réseau à `gitlab.amersports.com` (VPN si hors site) dès l'étape 3.
 
 ## Installation
 
@@ -47,12 +47,12 @@ Ouvrir PowerShell (menu Démarrer, taper « PowerShell ») et coller :
 
 ```powershell
 cd $HOME\Projects        # ou le dossier de votre choix ; le creer s'il n'existe pas
-git clone https://github.com/SLNAS/sln-smt-assistant.git
+git clone https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
 cd sln-smt-assistant
 ```
 
-Une fenêtre demande vos identifiants **GitHub**. Ils sont ensuite mémorisés. Si la réponse est
-« repository not found », c'est que l'accès au dépôt privé ne vous a pas encore été donné : le
+Une fenêtre demande vos identifiants **GitLab**. Ils sont ensuite mémorisés. Si la réponse est
+« repository not found », c'est que l'accès au projet ne vous a pas encore été donné : le
 message est le même que pour un dépôt inexistant.
 
 ### 4. Lancer le bootstrap
@@ -62,8 +62,8 @@ message est le même que pour un dépôt inexistant.
 ```
 
 Le script vérifie git, clone les deux dépôts SMT dans `repos/`, et contrôle qu'ils sont à jour et
-intacts. Il ne modifie jamais rien sur GitLab. C'est ici que vos identifiants **GitLab** sont
-demandés, une fois pour les deux dépôts.
+intacts. Il ne modifie jamais rien sur GitLab. Vos identifiants **GitLab** ont déjà été mémorisés à
+l'étape 3 ; ils resservent tels quels pour les deux dépôts SMT.
 
 Si PowerShell refuse d'exécuter le script (politique d'exécution), lancer une seule fois :
 
@@ -129,7 +129,7 @@ deviner. Une réponse « je ne peux pas conclure, voici ce qui manque » est un 
 | Symptôme | Cause probable | Quoi faire |
 |---|---|---|
 | `git est introuvable` | Étape 1 sautée, ou fenêtre ouverte avant l'installation | Installer git, rouvrir PowerShell |
-| `repository not found` à l'étape 3 | Accès au dépôt GitHub privé non accordé | Le demander à l'architecte ; GitHub renvoie ce message aussi bien pour un dépôt inexistant que pour un dépôt sans droits |
+| `repository not found` à l'étape 3 | Accès au projet GitLab `pdp/ai/sln-smt-assistant` non accordé (ou VPN absent) | Le demander à l'architecte ; GitLab renvoie ce message aussi bien pour un dépôt inexistant que pour un dépôt sans droits |
 | `Clone echoue` / `fetch impossible` | VPN coupé, ou droits GitLab manquants | Vérifier le VPN, puis les droits sur les deux dépôts |
 | `Working tree non vide` | Un fichier de `repos/` a été modifié en local | Ne rien éditer sous `repos/` ; demander de l'aide pour remettre à plat |
 | L'assistant ne voit ni Confluence ni Jira | Étape 5 non faite ou OAuth expiré | Refaire `/mcp` sur `atlassian` |
