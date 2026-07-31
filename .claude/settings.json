@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "allow": [
+      "mcp__atlassian__getPagesInConfluenceSpace",
+      "mcp__atlassian__getConfluencePage",
+      "PowerShell(foreach \\($r in 'sln-smt-backend','sln-smt-console'\\) { \"=== $r ===\"; git -C \"repos/$r\" rev-parse --abbrev-ref HEAD; \"files: \" + \\(Get-ChildItem \"repos/$r\" -Force | Measure-Object\\).Count; git -C \"repos/$r\" log -1 --format='%h %cI %s'; \"status:\"; git -C \"repos/$r\" status --porcelain })",
+      "PowerShell(foreach \\($r in 'sln-smt-backend','sln-smt-console'\\) { \"=== $r ===\"; git -C \"repos/$r\" fetch --quiet; if \\($?\\) { \"behind: \" + \\(git -C \"repos/$r\" rev-list --count 'HEAD..@{u}'\\) } else { \"fetch KO\" } })",
+      "mcp__atlassian__searchJiraIssuesUsingJql",
+      "PowerShell(foreach \\($c in 'python','python3','py','node','npx','dot','mmdc','magick','inkscape','chrome','msedge'\\) { $p = \\(Get-Command $c -ErrorAction SilentlyContinue\\).Source; if \\($p\\) { \"$c -> $p\" } else { \"$c -> absent\" } })"
+    ],
     "deny": [
       "mcp__atlassian__createConfluencePage",
       "mcp__atlassian__updateConfluencePage",
