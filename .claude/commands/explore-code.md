@@ -12,7 +12,9 @@ Si aucun argument n'est fourni, demander d'abord ce qu'il faut explorer plutôt 
 balayage au hasard.
 
 Consignes :
-- Périmètre : uniquement `repos/sln-smt-backend/` et `repos/sln-smt-console/`.
+- Périmètre : uniquement les dépôts de code `repos/sln-smt-backend/` et `repos/sln-smt-console/`. Le
+  corpus de specs (`repos/sln-smt-spec-owner/`) n'est pas du code : si la question porte sur une règle
+  spécifiée, lire la spec ici et transmettre la règle au sous-agent.
 - Exiger du sous-agent des constats étayés par `fichier:ligne`.
 - Restituer sa synthèse telle quelle, sans la compléter par des suppositions.
 - Si les dépôts sont vides ou la zone introuvable, le signaler franchement (fail-fast) au lieu

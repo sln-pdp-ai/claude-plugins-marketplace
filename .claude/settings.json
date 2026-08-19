@@ -5,28 +5,32 @@
       "mcp__atlassian__getConfluencePage",
       "PowerShell(foreach \\($r in 'sln-smt-backend','sln-smt-console'\\) { \"=== $r ===\"; git -C \"repos/$r\" rev-parse --abbrev-ref HEAD; \"files: \" + \\(Get-ChildItem \"repos/$r\" -Force | Measure-Object\\).Count; git -C \"repos/$r\" log -1 --format='%h %cI %s'; \"status:\"; git -C \"repos/$r\" status --porcelain })",
       "PowerShell(foreach \\($r in 'sln-smt-backend','sln-smt-console'\\) { \"=== $r ===\"; git -C \"repos/$r\" fetch --quiet; if \\($?\\) { \"behind: \" + \\(git -C \"repos/$r\" rev-list --count 'HEAD..@{u}'\\) } else { \"fetch KO\" } })",
+      "PowerShell(foreach \\($r in 'sln-smt-spec-owner','sln-smt-backend','sln-smt-console'\\) { \"=== $r ===\"; git -C \"repos/$r\" fetch --quiet; if \\($?\\) { \"behind: \" + \\(git -C \"repos/$r\" rev-list --count 'HEAD..@{u}'\\) } else { \"fetch KO\" }; \"status:\"; git -C \"repos/$r\" status --porcelain })",
+      "PowerShell(git ls-remote --heads https://gitlab.amersports.com/pdp/smt/sln-smt-spec-owner.git)",
       "mcp__atlassian__searchJiraIssuesUsingJql",
       "PowerShell(foreach \\($c in 'python','python3','py','node','npx','dot','mmdc','magick','inkscape','chrome','msedge'\\) { $p = \\(Get-Command $c -ErrorAction SilentlyContinue\\).Source; if \\($p\\) { \"$c -> $p\" } else { \"$c -> absent\" } })",
       "PowerShell(git ls-remote --heads https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git)",
       "PowerShell(git remote rename origin github)",
       "PowerShell(git remote add origin https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git)",
-      "PowerShell(git push -u origin main)"
+      "PowerShell(git push -u origin main)",
+      "PowerShell(git push)",
+      "mcp__atlassian__getConfluencePageDescendants"
     ],
     "deny": [
       "mcp__atlassian__createConfluencePage",
       "mcp__atlassian__updateConfluencePage",
       "mcp__atlassian__createConfluenceFooterComment",
       "mcp__atlassian__createConfluenceInlineComment",
+      "mcp__claude_ai_Atlassian__createConfluencePage",
+      "mcp__claude_ai_Atlassian__updateConfluencePage",
+      "mcp__claude_ai_Atlassian__createConfluenceFooterComment",
+      "mcp__claude_ai_Atlassian__createConfluenceInlineComment",
       "mcp__atlassian__createJiraIssue",
       "mcp__atlassian__editJiraIssue",
       "mcp__atlassian__transitionJiraIssue",
       "mcp__atlassian__addCommentToJiraIssue",
       "mcp__atlassian__addWorklogToJiraIssue",
       "mcp__atlassian__createIssueLink",
-      "mcp__claude_ai_Atlassian__createConfluencePage",
-      "mcp__claude_ai_Atlassian__updateConfluencePage",
-      "mcp__claude_ai_Atlassian__createConfluenceFooterComment",
-      "mcp__claude_ai_Atlassian__createConfluenceInlineComment",
       "mcp__claude_ai_Atlassian__createJiraIssue",
       "mcp__claude_ai_Atlassian__editJiraIssue",
       "mcp__claude_ai_Atlassian__transitionJiraIssue",
@@ -36,5 +40,8 @@
       "Edit(repos/**)",
       "Write(repos/**)"
     ]
+  },
+  "enabledPlugins": {
+    "feature-dev@claude-code-plugins": true
   }
 }

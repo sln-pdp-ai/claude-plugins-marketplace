@@ -3,8 +3,10 @@
     Prepare un poste pour l'assistant SMT (Claude Code hors VSCode).
 
 .DESCRIPTION
-    Verifie les prerequis, clone les deux depots SMT dans repos/ s'ils sont absents,
-    et controle la fraicheur de ceux qui sont deja la.
+    Verifie les prerequis, clone les trois depots SMT dans repos/ s'ils sont absents,
+    et controle la fraicheur de ceux qui sont deja la : le depot de specs
+    (sln-smt-spec-owner, source de verite des specs et du glossaire) et les deux
+    depots de code (sln-smt-backend, sln-smt-console).
 
     Strictement lecture seule vis-a-vis de GitLab : clone et fetch uniquement.
     Un clone existant n'est mis a jour que si -Update est passe explicitement.
@@ -33,6 +35,10 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $Repos = @(
+    @{
+        Name = 'sln-smt-spec-owner'
+        Url  = 'https://gitlab.amersports.com/pdp/smt/sln-smt-spec-owner.git'
+    },
     @{
         Name = 'sln-smt-backend'
         Url  = 'https://gitlab.amersports.com/core-soa/services/salomon-product/sln-smt-backend.git'
@@ -157,13 +163,14 @@ foreach ($repo in $Repos) {
 Write-Step 'Reste a faire a la main'
 Write-Info '1. Ouvrir ce dossier dans Claude Code et approuver le serveur MCP du projet.'
 Write-Info '2. Taper /mcp, choisir atlassian, et s authentifier dans le navigateur (OAuth).'
-Write-Info '3. Verifier avec : /spec-readiness SMT'
+Write-Info '   (Atlassian ne sert plus que pour Jira ; les specs sont dans repos/sln-smt-spec-owner.)'
+Write-Info '3. Verifier avec : /term-check Size Grid Code'
 
 Write-Step 'Bilan'
 if ($Problems -eq 0) {
     Write-Ok 'Poste pret : depots presents, a jour et intacts.'
     exit 0
 }
-Write-Warn "$Problems point(s) a traiter avant d'utiliser les skills de comparaison de code."
-Write-Info 'Ces skills refusent de conclure sur un clone absent, perime ou modifie.'
+Write-Warn "$Problems point(s) a traiter avant d'utiliser les skills."
+Write-Info 'Ils refusent de conclure sur un clone absent, perime ou modifie, specs comprises.'
 exit 1
