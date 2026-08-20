@@ -17,9 +17,10 @@ sous `plugins/`.
 | `smt-spec-quality` | spec owner, PO, toute personne qui relit une spec | skills `policy`, `term-check`, `spec-readiness` |
 | `smt-code-crosscheck` | profils techniques | skills `policy`, `spec-vs-code`, `doc-freshness`, `refactor-proposal`, `explore-code` + sous-agent `code-explorer` |
 
-Deux plugins et non un seul : le spec owner n'a ni accès au code ni besoin de Jira, et son propre
-`CLAUDE.md` interdit à son projet de dépendre du code. Lui livrer les skills de code l'obligerait à
-hériter d'outils qu'il n'a pas le droit d'utiliser.
+Deux plugins et non un seul : le spec owner n'a pas accès au code, et son propre `CLAUDE.md` interdit à
+son projet d'en dépendre. Lui livrer les skills de code l'obligerait à hériter d'outils qu'il n'a pas le
+droit d'utiliser. Jira, lui, est nécessaire aux deux : chaque plugin embarque son propre `.mcp.json`
+Atlassian pour pouvoir cibler une story plutôt qu'un seul fichier.
 
 Installation, une fois les droits GitLab accordés :
 

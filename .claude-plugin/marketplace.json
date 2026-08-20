@@ -9,7 +9,7 @@
     {
       "name": "smt-spec-quality",
       "source": "./plugins/smt-spec-quality",
-      "description": "Qualite des specs SMT : coherence terminologique contre le glossaire et check-list fail-fast prete pour le dev. Lit le corpus de specs versionne, n'a besoin ni du code ni de Jira.",
+      "description": "Qualite des specs SMT : coherence terminologique contre le glossaire et check-list fail-fast prete pour le dev. Lit le corpus de specs versionne et, pour cibler une story, Jira ; n'a pas besoin du code.",
       "version": "0.1.2"
     },
     {
