@@ -1,0 +1,11 @@
+{
+  "name": "smt-code-crosscheck",
+  "description": "Recoupement spec / code SMT : ecarts spec-code, peremption d'une spec face au code, propositions de refactoring, exploration de code en lecture seule.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Architecture SMT - Amer Sports"
+  },
+  "homepage": "https://gitlab.amersports.com/pdp/ai/sln-smt-assistant",
+  "repository": "https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git",
+  "keywords": ["smt", "specifications", "code", "gitlab", "fail-fast"]
+}

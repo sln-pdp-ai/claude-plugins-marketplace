@@ -261,8 +261,27 @@ Limites connues, à garder en tête :
   vraie garantie reste sa liste `tools:` (Read, Grep, Glob) : il ne dispose d'aucun outil
   d'écriture.
 
+## Distribution en plugins
+
+Ce dépôt est aussi un **marketplace de plugins Claude Code** : `.claude-plugin/marketplace.json` à la
+racine, et deux plugins sous `plugins/` (`smt-spec-quality` pour la qualité des specs,
+`smt-code-crosscheck` pour le recoupement spec / code). Ils permettent au spec owner et aux devs
+d'utiliser cet outillage sans avoir ce projet sur leur poste.
+
+Les plugins sont une **exportation** des skills de `.claude/skills/`, pas leur remplacement. Deux
+différences structurelles à connaître avant de modifier l'un ou l'autre :
+
+- un plugin ne peut livrer ni `CLAUDE.md` ni règle `permissions.deny` : la doctrine y est portée par un
+  hook `SessionStart` plus le skill `policy`, et les garde-fous par un hook `PreToolUse` ;
+- les plugins ne supposent aucun chemin : les dépôts sont résolus dynamiquement par
+  `bin/smt-repos.ps1`, alors que les skills de `.claude/skills/` s'appuient sur `repos/`.
+
+Toute évolution d'un skill de `.claude/skills/` doit donc être reportée dans le plugin correspondant, et
+inversement. Détail, procédure de synchronisation, versionnement et limites : `docs/plugins.md`.
+
 ## Documentation du projet
 
+- `docs/plugins.md` : distribution en plugins, marketplace interne, ce qui ne voyage pas dans un plugin.
 - `docs/acces-non-dev.md` : cadrage de l'accès des profils sans VSCode, grille de décision et piste
   retenue (Claude Code hors VSCode).
 - `docs/demarrage-non-dev.md` : guide d'installation pas à pas pour un profil non-dev.
