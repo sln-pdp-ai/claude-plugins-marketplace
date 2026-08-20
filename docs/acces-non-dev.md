@@ -214,11 +214,11 @@ couvre aujourd'hui l'ensemble du périmètre sans rien construire. Il est levé.
 - **Seuil de bascule vers la piste 3** : à partir de combien d'utilisateurs l'install par poste
   devient-elle intenable ? Non défini.
 
-## Prochaines étapes
+## Prochaines étapes (état d'origine, dépassé)
 
-1. Pilote de la piste 0 sur un poste non-dev, en suivant
-   [demarrage-non-dev.md](demarrage-non-dev.md).
-2. En parallèle : relance de l'admin GitLab sur le MCP officiel (débloqueur (a)).
-
-Déjà en place : le dépôt publié sur le GitLab interne, `scripts/bootstrap.ps1` (provisionne et contrôle un
-poste) et [demarrage-non-dev.md](demarrage-non-dev.md) (guide pas à pas).
+Ce que ce cadrage prévoyait comme suite - un pilote de la piste 0 avec `scripts/bootstrap.ps1`, et la
+relance de l'admin GitLab sur le MCP officiel (débloqueur (a)) - a été remplacé par la distribution en
+plugin décrite en tête de ce document. `scripts/bootstrap.ps1` n'existe plus. La suite réelle est le
+test du plugin `smt-spec-quality` dans un vrai projet, suivant
+[demarrage-non-dev.md](demarrage-non-dev.md) ; la relance sur le MCP GitLab officiel reste, elle,
+d'actualité.
