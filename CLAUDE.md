@@ -90,11 +90,15 @@ commit de scaffolding chacun (`CI - Initial commit` du 2026-07-27, aucun code m�
 
 ## Publier
 
-Le dépôt est versionné sur `gitlab.amersports.com`, projet
-`pdp/ai/claude-plugins-marketplace`, branche `main` (remote `origin`). Y commiter et y pousser
-est l'usage normal, sur demande. L'ancien remote `github`, vers l'hébergement historique
-(<https://github.com/SLNAS/sln-smt-assistant>), a été supprimé le 2026-08-20 : ce dépôt ne vit plus
-que sur GitLab interne.
+Le dépôt est versionné sur `gitlab.amersports.com`, projet `pdp/ai/claude-plugins-marketplace`,
+branche `main` (remote `origin`) : c'est la source de vérité. Y commiter et y pousser est l'usage
+normal, sur demande.
+
+Un remote `github` existe aussi, vers <https://github.com/sln-pdp-ai/claude-plugins-marketplace>
+(ajouté le 2026-08-20, en remplacement de l'ancien remote du même nom qui pointait vers
+`SLNAS/sln-smt-assistant`, supprimé le même jour). Y pousser publie ce dépôt, y compris les éléments
+internes qu'il expose (URLs GitLab, chemins de dépôts, structure du projet) : ne le faire que sur
+demande explicite, jamais par défaut avec `origin`.
 
 Le dépôt s'appelait `sln-smt-assistant` jusqu'au 2026-08-20. Ce nom désignait le produit alors que le
 dépôt est l'atelier, ce qui a entretenu la confusion avec un poste de travail. GitLab redirige l'ancien

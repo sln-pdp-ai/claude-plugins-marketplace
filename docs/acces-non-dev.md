@@ -12,6 +12,12 @@ conséquences pour la lecture de ce qui suit.
   reste vrai mais change de nature : le plugin est distribué depuis ce dépôt et versionné, donc la copie
   est traçable et se met à jour par `/plugin update`. La dérive redevient un problème de version, pas de
   recopie manuelle.
+- Le point « garder les instructions en interne évite la question de la publication externe » (section
+  Gouvernance ci-dessous) a été explicitement levé le 2026-08-20 : un remote GitHub
+  (<https://github.com/sln-pdp-ai/claude-plugins-marketplace>) a été ajouté sur demande, en plus du
+  GitLab interne qui reste la source de vérité (`origin`). Les éléments internes que le dépôt expose
+  (URLs GitLab, chemins de dépôts, structure du projet) sont donc désormais publics ; voir
+  [../CLAUDE.md](../CLAUDE.md) pour l'état des remotes.
 
 Note de cadrage d'origine, du 2026-07-29 au 2026-08-19 :
 
