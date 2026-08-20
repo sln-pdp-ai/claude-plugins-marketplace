@@ -12,7 +12,7 @@ Cadrage et justification du choix : [acces-non-dev.md](acces-non-dev.md).
 | Quoi | Auprès de qui | Pour quoi |
 |---|---|---|
 | Un siège Claude | Équipe IT / licences | Utiliser Claude Code |
-| L'accès au projet GitLab `pdp/ai/sln-smt-assistant` | L'architecte | Récupérer le plugin |
+| L'accès au projet GitLab `pdp/ai/claude-plugins-marketplace` | L'architecte | Récupérer le plugin |
 | L'accès au dépôt de specs `pdp/smt/sln-smt-spec-owner` | Le PO propriétaire du corpus | Lire les specs et le glossaire |
 | Un compte Atlassian Amer Sports | Déjà en place en général | Lire Jira |
 | Accès réseau à `gitlab.amersports.com` | VPN si hors site | Récupérer le plugin, puis les specs |
@@ -57,8 +57,8 @@ poserez vos questions. Le plugin y déposera sa copie de travail des specs, dans
 Ouvrir ce dossier dans Claude Code, puis taper :
 
 ```
-/plugin marketplace add https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
-/plugin install smt-spec-quality@sln-smt
+/plugin marketplace add https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace.git
+/plugin install smt-spec-quality@pdp-ai
 ```
 
 Si la réponse demande `/reload-plugins`, le lancer.
@@ -67,7 +67,7 @@ Une fenêtre peut demander vos identifiants **GitLab**. Si la réponse est « re
 c'est que l'accès au projet ne vous a pas encore été donné : GitLab renvoie ce message aussi bien pour
 un dépôt inexistant que pour un dépôt sans droits.
 
-Les profils techniques installent en plus `smt-code-crosscheck@sln-smt`, qui compare les specs au code.
+Les profils techniques installent en plus `smt-code-crosscheck@pdp-ai`, qui compare les specs au code.
 Sans accès aux dépôts de code, il ne sert à rien.
 
 ### 5. Connecter Jira
@@ -136,7 +136,7 @@ deviner. Une réponse « je ne peux pas conclure, voici ce qui manque » est un 
 | Symptôme | Cause probable | Quoi faire |
 |---|---|---|
 | `git est introuvable` | Étape 1 sautée, ou fenêtre ouverte avant l'installation | Installer git, rouvrir PowerShell |
-| Le marketplace refuse de s'ajouter | Accès à `pdp/ai/sln-smt-assistant` non accordé, ou VPN absent | Le demander à l'architecte, vérifier le VPN |
+| Le marketplace refuse de s'ajouter | Accès à `pdp/ai/claude-plugins-marketplace` non accordé, ou VPN absent | Le demander à l'architecte, vérifier le VPN |
 | Les commandes `/smt-spec-quality:...` n'apparaissent pas | Plugin installé mais non rechargé | `/reload-plugins`, puis `/plugin list` pour vérifier |
 | Le plugin ne trouve pas les specs | Accès au dépôt de specs non accordé | Le demander au PO ; sans lui, ni specs ni glossaire |
 | `fetch impossible` | VPN coupé, ou droits GitLab manquants | Vérifier le VPN, puis les droits |

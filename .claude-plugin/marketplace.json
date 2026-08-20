@@ -1,6 +1,6 @@
 {
-  "name": "sln-smt",
-  "description": "Outillage SMT (Size Management Tool) pour Claude Code : qualite des specifications et recoupement spec / code, en lecture seule, avec la doctrine fail-fast du projet sln-smt-assistant.",
+  "name": "pdp-ai",
+  "description": "Outillage SMT (Size Management Tool) pour Claude Code : qualite des specifications et recoupement spec / code, en lecture seule, avec la doctrine fail-fast du projet SMT.",
   "owner": {
     "name": "Architecture SMT - Amer Sports",
     "email": "nicolas.pignier.external@amersports.com"
@@ -10,13 +10,13 @@
       "name": "smt-spec-quality",
       "source": "./plugins/smt-spec-quality",
       "description": "Qualite des specs SMT : coherence terminologique contre le glossaire et check-list fail-fast prete pour le dev. Lit le corpus de specs versionne, n'a besoin ni du code ni de Jira.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "smt-code-crosscheck",
       "source": "./plugins/smt-code-crosscheck",
       "description": "Recoupement spec / code SMT : ecarts entre la spec et le code, peremption d'une spec, propositions de refactoring, exploration de code en lecture seule. Suppose le corpus de specs et les depots de code accessibles.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }

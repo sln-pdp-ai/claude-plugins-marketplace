@@ -6,8 +6,8 @@ d'une spec périmée face au code, propositions de refactoring, exploration de c
 ## Installation
 
 ```
-/plugin marketplace add https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
-/plugin install smt-code-crosscheck@sln-smt
+/plugin marketplace add https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace.git
+/plugin install smt-code-crosscheck@pdp-ai
 ```
 
 Si l'installation annonce `Run /reload-plugins to activate`, lancer `/reload-plugins`.

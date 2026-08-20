@@ -24,8 +24,8 @@ hériter d'outils qu'il n'a pas le droit d'utiliser.
 Installation, une fois les droits GitLab accordés :
 
 ```
-/plugin marketplace add https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
-/plugin install smt-spec-quality@sln-smt
+/plugin marketplace add https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace.git
+/plugin install smt-spec-quality@pdp-ai
 ```
 
 Variante sans commande : déclarer `extraKnownMarketplaces` et `enabledPlugins` dans le

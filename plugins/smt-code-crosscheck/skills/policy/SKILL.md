@@ -5,9 +5,9 @@ description: Doctrine SMT et localisation du corpus de specs. À lire avant tout
 
 # Doctrine SMT
 
-Ce skill porte les règles qui, dans le projet `sln-smt-assistant`, vivent dans `CLAUDE.md`. Un plugin
-ne peut pas livrer de `CLAUDE.md` : un fichier de ce nom à la racine d'un plugin n'est pas chargé
-comme contexte de projet. Le noyau est donc injecté au démarrage par un hook, et le détail est ici.
+Ce skill **est** la référence de la doctrine SMT : elle ne vit nulle part ailleurs. Un plugin ne peut
+pas livrer de `CLAUDE.md` : un fichier de ce nom à la racine d'un plugin n'est pas chargé comme
+contexte de projet. Le noyau est donc injecté au démarrage par un hook, et le détail est ici.
 
 ## Priorité absolue : fail-fast
 

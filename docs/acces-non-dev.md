@@ -186,7 +186,8 @@ couvre aujourd'hui l'ensemble du périmètre sans rien construire. Il est levé.
   explicitement.
 - Les **données lues** restent chez Amer Sports : issues dans le tenant Atlassian, specs et code sur
   `gitlab.amersports.com` et dans les clones locaux. Rien n'est recopié ailleurs.
-- Les **instructions** sont hébergées sur `gitlab.amersports.com` (`pdp/ai/sln-smt-assistant`), donc
+- Les **instructions** sont hébergées sur `gitlab.amersports.com`
+  (`pdp/ai/claude-plugins-marketplace`), donc
   en interne. Le dépôt ne contient ni secret, ni code, ni PII, mais il expose des éléments internes
   (URL GitLab, chemins des dépôts, nom de l'espace Confluence, structure du projet) : les garder sur
   l'instance interne évite la question de la publication sur une plateforme externe.
@@ -194,8 +195,8 @@ couvre aujourd'hui l'ensemble du périmètre sans rien construire. Il est levé.
 
 ## Risques et questions ouvertes
 
-- **Publication du dépôt : levée.** `sln-smt-assistant` est publié sur l'instance GitLab interne,
-  dans le groupe `pdp/ai` (<https://gitlab.amersports.com/pdp/ai/sln-smt-assistant>, branche `main`).
+- **Publication du dépôt : levée.** Le dépôt est publié sur l'instance GitLab interne, dans le groupe
+  `pdp/ai` (<https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace>, branche `main`).
   L'administration n'est donc pas liée à une personne, et l'hébergement reste dans le périmètre Amer
   Sports. Reste à accorder l'accès nominativement à chaque utilisateur.
 - **Fraîcheur des clones.** Traité : le contrôle est décrit dans `CLAUDE.md` (« Fraîcheur des
@@ -203,7 +204,8 @@ couvre aujourd'hui l'ensemble du périmètre sans rien construire. Il est levé.
   non vérifiable ou modifié. Depuis le 2026-08-19 il couvre aussi le dépôt de specs, avant toute lecture
   de spec.
 - **Prérequis à provisionner** par personne : siège Claude, compte GitLab avec accès au projet
-  `pdp/ai/sln-smt-assistant`, au dépôt de specs `pdp/smt/sln-smt-spec-owner` et aux deux dépôts de code
+  `pdp/ai/claude-plugins-marketplace`, au dépôt de specs `pdp/smt/sln-smt-spec-owner` et aux
+  deux dépôts de code
   SMT, compte Atlassian. Soit deux authentifications distinctes à l'installation (GitLab, Atlassian), le
   même compte GitLab servant pour l'assistant, les specs et le code. L'accès au dépôt de specs est le
   nouveau point de blocage : sans lui, l'assistant n'a ni specs ni glossaire.

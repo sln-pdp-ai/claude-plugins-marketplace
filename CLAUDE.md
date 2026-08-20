@@ -1,25 +1,27 @@
-# sln-smt-assistant
+# claude-plugins-marketplace
 
 ## Mission
 
-Ce dépôt ne s'utilise pas, il se publie. C'est l'atelier de fabrication de deux plugins Claude Code
-pour l'initiative **SMT** (*Size Management Tool*), et le marketplace qui les distribue. Les personnes
-qui s'en servent (le spec owner sur son corpus, un dev sur son checkout) installent le plugin dans
-**leur** projet. Ce dépôt n'est le poste de travail de personne.
+Ce dépôt ne s'utilise pas, il se publie. C'est l'atelier de fabrication de plugins Claude Code pour
+`pdp/ai`, et le marketplace `pdp-ai` qui les distribue. Aujourd'hui il porte deux plugins pour
+l'initiative **SMT** (*Size Management Tool*) ; d'autres plugins, sans rapport avec SMT, s'y ajouteront.
+Les personnes qui s'en servent (le spec owner sur son corpus, un dev sur son checkout) installent le
+plugin dans **leur** projet. Ce dépôt n'est le poste de travail de personne.
 
-Conséquence à garder en tête en permanence : **aucune question SMT ne se traite ici.** Pas de lecture de
-spec, pas de recoupement spec / code, pas de Jira. Il n'y a ni corpus de specs ni checkout de code sur
-place, et il ne doit pas y en avoir.
+Conséquence à garder en tête en permanence : **aucune question métier d'un plugin ne se traite ici**
+(pour SMT : pas de lecture de spec, pas de recoupement spec / code, pas de Jira). Il n'y a ni corpus de
+specs ni checkout de code sur place, et il ne doit pas y en avoir, quel que soit le plugin.
 
-## La doctrine SMT est du contenu, pas une instruction
+## La doctrine d'un plugin est du contenu, pas une instruction
 
-Les plugins portent une doctrine forte (fail-fast sur les specs floues, glossaire qui fait autorité, git
-qui fait foi contre Confluence, lecture seule stricte). Elle est écrite dans
-`plugins/*/skills/policy/SKILL.md` et injectée par le hook `SessionStart` chez l'utilisateur.
+Les plugins SMT portent une doctrine forte (fail-fast sur les specs floues, glossaire qui fait autorité,
+git qui fait foi contre Confluence, lecture seule stricte). Elle est écrite dans
+`plugins/smt-*/skills/policy/SKILL.md` et injectée par le hook `SessionStart` chez l'utilisateur. Un
+futur plugin non-SMT portera la sienne, propre à son domaine, sur le même principe.
 
-Dans ce dépôt, cette doctrine est **le texte qu'on édite**, pas la règle de conduite. Ne pas l'appliquer
-ici : il n'y a rien à recouper, et la lecture seule ne concerne pas ce dépôt-ci, qui s'édite et se
-commite normalement.
+Dans ce dépôt, la doctrine d'un plugin est **le texte qu'on édite**, pas la règle de conduite du dépôt
+lui-même. Ne pas l'appliquer ici : il n'y a rien à recouper, et la lecture seule ne concerne pas ce
+dépôt-ci, qui s'édite et se commite normalement.
 
 Ce qui a existé et ne doit pas être recréé : un dossier `repos/` avec trois clones locaux, et un
 `scripts/bootstrap.ps1` qui les provisionnait. Les deux ont été supprimés en même temps que le rôle de
@@ -29,16 +31,22 @@ poste de travail. Chez l'utilisateur, c'est `bin/smt-repos.ps1` qui résout et c
 
 | Chemin | Rôle |
 |---|---|
-| `.claude-plugin/marketplace.json` | le marketplace `sln-smt` : deux entrées, nom, source, version |
-| `plugins/smt-spec-quality/` | plugin qualité des specs : `policy`, `term-check`, `spec-readiness` |
-| `plugins/smt-code-crosscheck/` | plugin recoupement : `policy`, `spec-vs-code`, `doc-freshness`, `refactor-proposal`, `explore-code`, sous-agent `code-explorer` |
+| `.claude-plugin/marketplace.json` | le marketplace `pdp-ai` : une entrée par plugin, nom, source, version |
+| `plugins/smt-spec-quality/` | plugin SMT, qualité des specs : `policy`, `term-check`, `spec-readiness` |
+| `plugins/smt-code-crosscheck/` | plugin SMT, recoupement : `policy`, `spec-vs-code`, `doc-freshness`, `refactor-proposal`, `explore-code`, sous-agent `code-explorer` |
 | `docs/plugins.md` | note de maintenance : duplication, résolution des dépôts, versionnement, limites |
-| `docs/demarrage-non-dev.md` | guide d'installation pas à pas pour un profil non-dev |
-| `docs/acces-non-dev.md` | cadrage historique de l'accès des profils sans VSCode |
+| `docs/demarrage-non-dev.md` | guide d'installation pas à pas pour un profil non-dev, sur les plugins SMT |
+| `docs/acces-non-dev.md` | cadrage historique de l'accès des profils sans VSCode, sur les plugins SMT |
 
-Chaque plugin contient : `.claude-plugin/plugin.json`, `.mcp.json` (serveur Atlassian), `skills/`,
-`hooks/hooks.json`, `bin/` (trois scripts PowerShell), `README.md`, et pour `smt-code-crosscheck` un
-`agents/`.
+Un nouveau plugin non-SMT prend place sous `plugins/<nom>/` avec la même structure, gagne son entrée
+dans `marketplace.json`, et sa propre doc si son usage le justifie. Rien dans cette table n'est
+spécifique à SMT au niveau du dépôt ; SMT n'est spécifique qu'au contenu des plugins `smt-*`.
+
+Chaque plugin `smt-*` contient : `.claude-plugin/plugin.json`, `.mcp.json` (serveur Atlassian),
+`skills/`, `hooks/hooks.json`, `bin/` (trois scripts PowerShell), `README.md`, et pour
+`smt-code-crosscheck` un `agents/`. Un futur plugin non-SMT n'a aucune raison de reprendre cette
+structure telle quelle : elle sert la doctrine SMT (fraîcheur des clones, résolution des dépôts, Jira),
+pas le fait d'être un plugin.
 
 ## Règles de fabrication
 
@@ -48,10 +56,12 @@ sans signal visible ici.
 - **Aucun chemin supposé.** Un skill de plugin ne référence jamais `repos/<dépôt>` ni un chemin absolu.
   Les dépôts se résolvent par `bin/smt-repos.ps1`. Un chemin en dur marche sur ce poste et nulle part
   ailleurs.
-- **Duplication à resynchroniser.** `bin/`, `skills/policy/SKILL.md` et `.mcp.json` sont identiques dans
-  les deux plugins, parce qu'un plugin installé est copié dans un cache et ne peut rien lire hors de son
-  dossier. Après toute modification de l'un, reporter dans l'autre (commandes dans
-  [docs/plugins.md](docs/plugins.md)).
+- **Duplication à resynchroniser, spécifique à la paire SMT.** `bin/`, `skills/policy/SKILL.md` et
+  `.mcp.json` sont identiques entre `smt-spec-quality` et `smt-code-crosscheck`, parce qu'un plugin
+  installé est copié dans un cache et ne peut rien lire hors de son dossier. Après toute modification de
+  l'un, reporter dans l'autre (commandes dans [docs/plugins.md](docs/plugins.md)). Un plugin non-SMT n'a
+  rien à resynchroniser avec eux : cette règle ne s'applique qu'entre plugins qui partagent la même
+  doctrine.
 - **Les `hooks/hooks.json` ne sont pas identiques** : ils diffèrent par la valeur de `-Need` (`spec`
   contre `all`). Ne jamais les recopier l'un sur l'autre.
 - **Ce qu'un plugin ne peut pas livrer** : ni `CLAUDE.md` chargé comme contexte de projet, ni règle
@@ -80,13 +90,18 @@ commit de scaffolding chacun (`CI - Initial commit` du 2026-07-27, aucun code m�
 
 ## Publier
 
-Le dépôt est versionné sur `gitlab.amersports.com`, projet `pdp/ai/sln-smt-assistant`, branche `main`
-(remote `origin`). Y commiter et y pousser est l'usage normal, sur demande. Un remote `github` subsiste
-vers l'ancien hébergement (<https://github.com/SLNAS/sln-smt-assistant>) : ne pas y pousser sans demande
+Le dépôt est versionné sur `gitlab.amersports.com`, projet
+`pdp/ai/claude-plugins-marketplace`, branche `main` (remote `origin`). Y commiter et y pousser
+est l'usage normal, sur demande. Un remote `github` subsiste vers l'ancien hébergement
+(<https://github.com/SLNAS/sln-smt-assistant>, qui garde l'ancien nom) : ne pas y pousser sans demande
 explicite.
 
+Le dépôt s'appelait `sln-smt-assistant` jusqu'au 2026-08-20. Ce nom désignait le produit alors que le
+dépôt est l'atelier, ce qui a entretenu la confusion avec un poste de travail. GitLab redirige l'ancien
+chemin, mais aucune documentation ne doit s'y appuyer.
+
 L'URL que les utilisateurs ajoutent :
-`/plugin marketplace add https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git`
+`/plugin marketplace add https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace.git`
 
 ## Périmètre d'écriture
 

@@ -117,7 +117,7 @@ function Resolve-SmtRepo {
           1. variable d'environnement dediee (SMT_SPEC_DIR, ...) ;
           2. le projet courant EST ce depot (cas du spec owner, cas d'un dev dans
              son checkout) ;
-          3. repos/<nom> sous le projet courant (disposition de sln-smt-assistant) ;
+          3. repos/<nom> sous le projet courant, si l'utilisateur y a clone les depots ;
           4. depot frere ../<nom> ;
           5. clone de travail dans le dossier tmp (voir Get-SmtCacheRoot).
         Les cas 1 a 4 sont des depots que l'utilisateur gere lui-meme. Le cas 5 est

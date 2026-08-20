@@ -6,8 +6,8 @@ cohérence des termes avec le glossaire, et check-list fail-fast « prêt pour l
 ## Installation
 
 ```
-/plugin marketplace add https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
-/plugin install smt-spec-quality@sln-smt
+/plugin marketplace add https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace.git
+/plugin install smt-spec-quality@pdp-ai
 ```
 
 Si l'installation annonce `Run /reload-plugins to activate`, lancer `/reload-plugins`.
