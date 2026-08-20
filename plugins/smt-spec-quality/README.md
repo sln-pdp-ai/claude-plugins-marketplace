@@ -56,9 +56,14 @@ Un dépôt n'est reconnu que s'il porte `solution-overview/glossary.md` : un dos
 pas le corpus.
 
 Pour le cas 5, le dossier `.smt-tmp/` n'est utilisé que **si git l'ignore**, faute de quoi le plugin
-salirait le working tree d'un dépôt qu'il n'est pas censé toucher. Sinon, le clone va dans
-`%LOCALAPPDATA%\smt-assistant\repos`. Pour préférer le dossier local, ajouter `.smt-tmp/` à son
-`.gitignore` global :
+salirait le working tree d'un dépôt qu'il n'est pas censé toucher, et le clone va dans
+`%LOCALAPPDATA%\smt-assistant\repos` à la place. Cela ne concerne que le cas où le projet ouvert est
+lui-même un dépôt git (typiquement un dev dans son checkout de code) : un simple dossier de travail non
+versionné n'a pas ce problème.
+
+Le plugin le détecte et vous le signale avant de cloner. Il propose alors d'ajouter `.smt-tmp/` au
+`.gitignore` du projet : accepter l'édition proposée suffit, rien à taper. Alternative, pour l'éviter
+sans toucher au `.gitignore` du projet : un `.gitignore` global.
 
 ```powershell
 git config --global core.excludesfile "$HOME/.gitignore_global"
@@ -70,6 +75,13 @@ Vérifier la résolution à tout moment :
 ```
 powershell -File "<dossier du plugin>/bin/smt-repos.ps1" -Action paths -Need spec
 ```
+
+## Garder le clone de travail à jour
+
+Un clone géré par le plugin (celui du cas 5, jamais un dépôt que vous gérez vous-même) ne reçoit
+jamais d'écriture : un `git pull --ff-only` dessus ne peut donc rien écraser. Quand le contrôle de
+fraîcheur le signale en retard, le plugin propose de le rafraîchir lui-même ; accepter l'exécution
+demandée suffit. Pas de commande à taper.
 
 ## Limites connues
 

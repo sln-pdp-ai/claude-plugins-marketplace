@@ -55,11 +55,15 @@ dépôt.
 Le clone de travail va dans `.smt-tmp/` du projet courant, **à condition que git l'ignore**. Sinon il
 part dans `%LOCALAPPDATA%\smt-assistant\repos`. Sans cette condition, le plugin salirait le working tree
 d'un dépôt qu'il est censé ne pas toucher, et le verdict de fraîcheur `SALE` se déclencherait en
-permanence, sur une saleté que le plugin aurait lui-même créée.
+permanence, sur une saleté que le plugin aurait lui-même créée. Quand ce cas se présente (le projet
+ouvert est lui-même un dépôt git qui n'ignore pas `.smt-tmp`), `-Action paths` et `-Action check` le
+signalent, et la doctrine propose d'ajouter `.smt-tmp/` au `.gitignore` du projet avant de cloner : une
+édition proposée à l'utilisateur, pas une correction silencieuse.
 
-Trois actions : `-Action paths` (aucun réseau), `-Action check` (fetch + verdict, code de retour 1 si un
-dépôt bloque), `-Action ensure` (clone ce qui manque). Verdicts : `A_JOUR`, `EN_RETARD`, `FETCH_KO`,
-`SALE`, `ABSENT`.
+Quatre actions : `-Action paths` (aucun réseau), `-Action check` (fetch + verdict, code de retour 1 si
+un dépôt bloque), `-Action ensure` (clone ce qui manque), `-Action update` (rafraîchit, `git pull
+--ff-only`, les seuls clones de travail gérés par le plugin ; un dépôt géré par l'utilisateur n'est
+jamais touché). Verdicts : `A_JOUR`, `EN_RETARD`, `FETCH_KO`, `SALE`, `ABSENT`.
 
 ## Ce que le hook PreToolUse bloque, et ce qu'il laisse passer
 
@@ -114,11 +118,13 @@ Les `hooks/hooks.json` ne sont **pas** identiques : ils diffèrent par la valeur
 - **Le blocage Atlassian est actif pour toute la session** dès que le plugin est activé, pas seulement
   pendant l'usage d'un skill SMT. Un hook n'a aucune notion de « quel skill est en cours ».
 - **`git commit` n'est pas bloquable par répertoire** : la protection porte sur `Edit` / `Write`.
-- **La mise à jour d'une copie de travail périmée reste manuelle.** `-Action ensure` clone ce qui manque
-  mais ne rafraîchit rien, par principe de lecture seule. L'utilisateur doit lancer lui-même un
-  `git -C <chemin> pull --ff-only`. Pour un profil non-dev, c'est la seule commande git qu'il reste à
-  taper : une action `-Action update` explicite, ou une invite plus précise dans le message de fail-fast,
-  lèverait ce point.
+- **Le rafraîchissement d'un clone de travail périmé passe par l'agent, pas par l'utilisateur.**
+  `-Action update` fait le `git pull --ff-only` ; la doctrine (`policy/SKILL.md`) demande de le proposer
+  puis de l'exécuter dès que l'utilisateur autorise l'appel d'outil, via le prompt de permission standard
+  de Claude Code. Aucune commande à taper. Cela ne s'applique qu'aux clones gérés par le plugin (`.smt-
+  tmp/` ou cache utilisateur) : un dépôt que l'utilisateur gère lui-même (projet courant, `repos/<nom>`,
+  dépôt frère, variable d'environnement) n'est jamais rafraîchi à sa place, `-Action update` le signale
+  et s'arrête là.
 - **Deux plugins actifs en même temps** injectent deux fois la doctrine au démarrage, évaluent deux fois
   chaque écriture, et déclarent deux serveurs MCP Atlassian équivalents. Sans effet fonctionnel, mais du
   contexte et une authentification en double.

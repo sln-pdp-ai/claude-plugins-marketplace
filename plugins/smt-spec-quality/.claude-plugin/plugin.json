@@ -1,7 +1,7 @@
 {
   "name": "smt-spec-quality",
   "description": "Qualite des specifications SMT : coherence des termes avec le glossaire, check-list fail-fast prete pour le dev. Lecture seule sur le corpus de specs versionne.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "Architecture SMT - Amer Sports"
   },

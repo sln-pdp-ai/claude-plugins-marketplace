@@ -84,15 +84,23 @@ dépend. `-Action paths` répond sans accès réseau quand seule la localisation
 Interprétation, en fail-fast :
 
 - `A_JOUR` : continuer.
-- `EN_RETARD` : STOP. Donner le nombre de commits et la date du dernier commit distant, demander un
-  rafraîchissement. Ne jamais rafraîchir soi-même : `git pull` modifie le checkout. Ne poursuivre que
-  si l'utilisateur l'accepte explicitement, et le rappeler dans la sortie.
+- `EN_RETARD` sur un clone de travail géré (`Managed`, colonne « clone de travail » de
+  `-Action paths`) : STOP. Donner le nombre de commits et la date du dernier commit distant, proposer
+  de le rafraîchir avec `-Action update` (fast-forward uniquement ; rien n'écrit jamais sur ce clone,
+  donc rien à perdre), puis l'exécuter dès que l'utilisateur autorise l'appel d'outil. Il n'a rien à
+  taper lui-même. Continuer seulement après un `MIS A JOUR` ou `DEJA A JOUR`.
+- `EN_RETARD` sur un dépôt géré par l'utilisateur (projet courant, `repos/<nom>`, dépôt frère, variable
+  d'environnement) : STOP. Ne jamais le rafraîchir soi-même, c'est son dépôt. Donner le nombre de
+  commits et la date, et attendre qu'il le mette à jour lui-même avant de continuer.
 - `FETCH_KO` : STOP. La fraîcheur est invérifiable, donc toute conclusion l'est aussi.
 - `SALE` : le working tree du dépôt lu n'est pas vide, ce qui est lu ne correspond plus à ce qui est
   versionné. Le signaler avant de continuer.
-- `ABSENT` : STOP. Annoncer ce qui va être cloné et où, puis, seulement après accord,
+- `ABSENT` : STOP. Annoncer ce qui va être cloné et où. Si `-Action paths` ou `-Action check` signale
+  qu'un `.gitignore` gagnerait à ignorer `.smt-tmp`, proposer d'abord cette édition (avec l'accord de
+  l'utilisateur) pour que le clone reste dans le projet plutôt que dans le cache utilisateur ; sans cet
+  ajout, `-Action ensure` clone quand même, juste ailleurs. Puis, après accord pour le clone lui-même,
   `-Action ensure`. Un clone de travail est une copie de lecture : ne jamais y écrire, ne jamais y
-  commiter.
+  commiter, seul `-Action update` a le droit d'y toucher.
 
 ## Périmètre d'écriture
 

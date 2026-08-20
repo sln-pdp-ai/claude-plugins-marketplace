@@ -111,6 +111,22 @@ function Get-SmtCacheRoot {
     return (Join-Path $HOME '.cache/smt-assistant/repos')
 }
 
+function Test-SmtGitignoreAdvice {
+    <#
+        Signale si ce projet gagnerait a ignorer .smt-tmp, pour que le prochain clone
+        de travail reste local plutot que de partir dans le cache utilisateur (voir
+        Get-SmtCacheRoot). Ne s'applique que si le projet courant est lui-meme un
+        depot git : un simple dossier de travail non versionne n'a pas ce probleme,
+        le cache local s'applique deja par construction.
+    #>
+    param([string]$Cwd)
+    $root = Get-SmtProjectRoot -Cwd $Cwd
+    if (-not (Test-IsGitRepo -Path $root)) { return $null }
+    $null = & git -C $root check-ignore -q '.smt-tmp' 2>$null
+    if ($LASTEXITCODE -eq 0) { return $null }
+    return (Join-Path $root '.gitignore')
+}
+
 function Resolve-SmtRepo {
     <#
         Ordre de resolution, du plus explicite au plus automatique :

@@ -112,14 +112,11 @@ La copie de travail est figée au moment où le plugin l'a récupérée. Une cop
 faux, sans aucun signal. Le plugin contrôle donc la fraîcheur avant chaque réponse, et **refuse de
 conclure** sur une copie en retard, y compris pour une simple question de vocabulaire.
 
-Il ne met pas à jour de lui-même, par principe : il est en lecture seule. Quand il signale un retard :
-
-```powershell
-git -C $HOME\Projects\smt-questions\.smt-tmp\sln-smt-spec-owner pull --ff-only
-```
-
-Le chemin exact figure dans le message du plugin. Pour mettre à jour le plugin lui-même, quand
-l'architecte annonce une nouvelle version : `/plugin update smt-spec-quality`.
+Le corpus original, lui, n'est jamais touché : la copie de travail que le plugin gère dans
+`.smt-tmp/` n'a jamais reçu la moindre écriture, donc la rafraîchir ne peut rien écraser. Quand il
+signale un retard, il propose de la rafraîchir lui-même : accepter l'exécution demandée suffit, rien à
+taper. Pour mettre à jour le plugin lui-même, quand l'architecte annonce une nouvelle version :
+`/plugin update smt-spec-quality`.
 
 ## Ce que l'outillage ne fait pas
 
@@ -140,7 +137,7 @@ deviner. Une réponse « je ne peux pas conclure, voici ce qui manque » est un 
 | Les commandes `/smt-spec-quality:...` n'apparaissent pas | Plugin installé mais non rechargé | `/reload-plugins`, puis `/plugin list` pour vérifier |
 | Le plugin ne trouve pas les specs | Accès au dépôt de specs non accordé | Le demander au PO ; sans lui, ni specs ni glossaire |
 | `fetch impossible` | VPN coupé, ou droits GitLab manquants | Vérifier le VPN, puis les droits |
-| Le plugin annonce un retard et s'arrête | Comportement normal | Lancer le `git pull` ci-dessus, puis relancer la commande |
+| Le plugin annonce un retard et s'arrête | Comportement normal | Autoriser le rafraîchissement qu'il propose, puis relancer la commande |
 | Il ne voit pas Jira | Étape 5 non faite ou OAuth expiré | Refaire `/mcp` sur `atlassian` |
 | Réponses sans `fichier:ligne` | Copie de travail absente | Relancer la commande ; le plugin doit annoncer la récupération |
 | Il cite Confluence pour une règle | Réflexe de l'ancien câblage | Lui demander la source dans le corpus git ; Confluence n'est plus la référence |

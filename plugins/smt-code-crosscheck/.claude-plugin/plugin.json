@@ -1,7 +1,7 @@
 {
   "name": "smt-code-crosscheck",
   "description": "Recoupement spec / code SMT : ecarts spec-code, peremption d'une spec face au code, propositions de refactoring, exploration de code en lecture seule.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "Architecture SMT - Amer Sports"
   },
