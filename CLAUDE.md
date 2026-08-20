@@ -3,10 +3,11 @@
 ## Mission
 
 Ce dépôt ne s'utilise pas, il se publie. C'est l'atelier de fabrication de plugins Claude Code pour
-`pdp/ai`, et le marketplace `pdp-ai` qui les distribue. Aujourd'hui il porte deux plugins pour
-l'initiative **SMT** (*Size Management Tool*) ; d'autres plugins, sans rapport avec SMT, s'y ajouteront.
-Les personnes qui s'en servent (le spec owner sur son corpus, un dev sur son checkout) installent le
-plugin dans **leur** projet. Ce dépôt n'est le poste de travail de personne.
+`pdp/ai`, et le marketplace `pdp-ai` qui les distribue. Il porte deux familles : les plugins `smt-*` pour
+l'initiative **SMT** (*Size Management Tool*), et les plugins `pdp-*` pour l'écosystème produit PDP.
+Les personnes qui s'en servent (le spec owner sur son corpus, un dev sur son checkout, un PO sur son
+périmètre d'applications) installent le plugin dans **leur** projet. Ce dépôt n'est le poste de travail
+de personne.
 
 Conséquence à garder en tête en permanence : **aucune question métier d'un plugin ne se traite ici**
 (pour SMT : pas de lecture de spec, pas de recoupement spec / code, pas de Jira). Il n'y a ni corpus de
@@ -32,6 +33,7 @@ poste de travail. Chez l'utilisateur, c'est `bin/smt-repos.ps1` qui résout et c
 | Chemin | Rôle |
 |---|---|
 | `.claude-plugin/marketplace.json` | le marketplace `pdp-ai` : une entrée par plugin, nom, source, version |
+| `plugins/pdp-architecture/` | plugin PDP, savoir d'architecture stable : `ecosystem-map`, `sbus`, `api-exposure-auth`, `feature-flags`, `structured-logging`, `persistence`. Skills purs, aucune mécanique |
 | `plugins/smt-spec-quality/` | plugin SMT, qualité des specs : `policy`, `term-check`, `spec-readiness` |
 | `plugins/smt-code-crosscheck/` | plugin SMT, recoupement : `policy`, `spec-vs-code`, `doc-freshness`, `refactor-proposal`, `explore-code`, sous-agent `code-explorer` |
 | `docs/plugins.md` | note de maintenance : duplication, résolution des dépôts, versionnement, limites |
@@ -53,6 +55,21 @@ pas le fait d'être un plugin.
 Ces règles sont la raison d'être du dépôt. Les enfreindre casse les plugins chez leurs utilisateurs,
 sans signal visible ici.
 
+- **Un plugin de savoir ne contient aucun fait périssable.** Chemin de fichier, nom de handler,
+  constante, version de package, SHA : interdits dans `pdp-architecture`. Un plugin publié tous les trois
+  mois qui affirme `DYNAMODB_LIMIT = 25` est faux au sprint suivant, sans aucun signal, et les livrables
+  écrits dessus sont faux aussi. La ligne de partage n'est pas « architecture contre rédaction », c'est
+  **écrit à la main et stable** contre **dérivé du code et périssable**. Le second va dans le workbench,
+  qui le régénère chez l'utilisateur.
+- **Les noms de topics S/Bus et les listes de souscription sont périssables.** Contre-intuitif, donc à
+  retenir : ce ne sont pas des contrats figés. Les topics sont renommés au fil des sprints et la liste
+  des souscriptions d'un service change dès qu'on lui en ajoute une. Un même flux porte déjà trois
+  orthographes dans la documentation interne. Ce qui est stable est la **forme** du nom
+  (`<domaine>-<entité>-<canal>`, suffixe `-request`), le rôle des champs d'enveloppe, et la table des
+  systèmes autoritaires. Un skill peut illustrer la forme, jamais tenir l'annuaire.
+- **Un skill de savoir ne pinne pas de modèle.** Un `model:` dans un skill de `pdp-architecture`
+  dégraderait la session de qui le consulte : c'est du contexte, pas une tâche. Le pinning reste réservé
+  aux skills qui exécutent un travail borné.
 - **Aucun chemin supposé.** Un skill de plugin ne référence jamais `repos/<dépôt>` ni un chemin absolu.
   Les dépôts se résolvent par `bin/smt-repos.ps1`. Un chemin en dur marche sur ce poste et nulle part
   ailleurs.

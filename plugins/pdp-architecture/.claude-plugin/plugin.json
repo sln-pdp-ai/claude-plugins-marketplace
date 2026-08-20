@@ -1,0 +1,11 @@
+{
+  "name": "pdp-architecture",
+  "description": "Savoir d'architecture stable de l'ecosysteme produit PDP Salomon / Amer Sports : carte des systemes autoritaires, semantique du S/Bus et pattern replay, exposition d'API et authentification, feature flags AppConfig, conventions de journalisation, choix du datastore. Contenu ecrit a la main, sans chemin de fichier ni constante issue du code. Utile a un PO qui redige une story comme a un dev qui developpe.",
+  "version": "0.3.1",
+  "author": {
+    "name": "Architecture PDP - Amer Sports"
+  },
+  "homepage": "https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace",
+  "repository": "https://gitlab.amersports.com/pdp/ai/claude-plugins-marketplace.git",
+  "keywords": ["pdp", "architecture", "sbus", "salomon-bus", "replay", "integration"]
+}

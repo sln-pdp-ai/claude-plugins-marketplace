@@ -1,11 +1,17 @@
 {
   "name": "pdp-ai",
-  "description": "Outillage SMT (Size Management Tool) pour Claude Code : qualite des specifications et recoupement spec / code, en lecture seule, avec la doctrine fail-fast du projet SMT.",
+  "description": "Outillage Claude Code du domaine PDP Salomon / Amer Sports : savoir d'architecture de l'ecosysteme produit, et outillage SMT (Size Management Tool) pour la qualite des specifications et le recoupement spec / code.",
   "owner": {
     "name": "Architecture SMT - Amer Sports",
     "email": "nicolas.pignier.external@amersports.com"
   },
   "plugins": [
+    {
+      "name": "pdp-architecture",
+      "source": "./plugins/pdp-architecture",
+      "description": "Savoir d'architecture stable de l'ecosysteme produit PDP : carte des systemes autoritaires, semantique du S/Bus et pattern replay, exposition d'API et authentification, feature flags AppConfig, conventions de journalisation, choix du datastore. Skills purs, sans checkout ni script. Pour un PO qui redige une story comme pour un dev qui developpe.",
+      "version": "0.3.1"
+    },
     {
       "name": "smt-spec-quality",
       "source": "./plugins/smt-spec-quality",

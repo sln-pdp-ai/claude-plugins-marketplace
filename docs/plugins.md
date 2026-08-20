@@ -14,6 +14,7 @@ sous `plugins/`.
 
 | Plugin | Pour qui | Contenu |
 |---|---|---|
+| `pdp-architecture` | PO **et** dev du domaine PDP | skills `ecosystem-map`, `sbus`, `api-exposure-auth`, `feature-flags`, `structured-logging`, `persistence`. Skills purs : ni `bin/`, ni hook, ni `.mcp.json`, ni sous-agent |
 | `smt-spec-quality` | spec owner, PO, toute personne qui relit une spec | skills `policy`, `term-check`, `spec-readiness` |
 | `smt-code-crosscheck` | profils techniques | skills `policy`, `spec-vs-code`, `doc-freshness`, `refactor-proposal`, `explore-code` + sous-agent `code-explorer` |
 
@@ -33,6 +34,43 @@ Variante sans commande : déclarer `extraKnownMarketplaces` et `enabledPlugins` 
 `.claude/settings.json` du dépôt cible (corpus de specs, backend, console). Le marketplace s'ajoute dès
 que la personne fait confiance au dossier. Cela suppose de commiter dans ces dépôts, donc l'accord de
 leurs owners.
+
+## La famille `pdp-*` et sa ligne de partage
+
+Les plugins `pdp-*` distribuent l'outillage du domaine PDP, issu du dépôt
+`archi-user-stories-assistant` (base de connaissance de l'architecte / PO sur l'écosystème produit).
+Ce dépôt-là reste en place, inchangé ; les plugins en sont l'extraction publiable.
+
+Trois plugins visés, découpés sur la **volatilité du contenu**, pas sur la fonction :
+
+| Plugin | Contenu | Cadence | PO | Dev |
+|---|---|---|---|---|
+| `pdp-architecture` | écrit à la main, stable : conventions, invariants, sémantique, vocabulaire, schémas | trimestre | oui | oui |
+| `pdp-po-workbench` | rédaction des livrables Jira / Confluence, plus la mécanique qui régénère le savoir périssable chez l'utilisateur | sprint | oui | non |
+| `pdp-code-crosscheck` (pas encore écrit) | lecture du code des autres services du domaine, sur le patron de `smt-code-crosscheck` | sprint | non | oui |
+
+Pourquoi cette ligne et pas « architecture d'un côté, stories de l'autre » : les deux phrases « un topic
+`-request` déclenche un rejeu sur le topic standard » et « tel handler pagine par 10 » sont toutes les
+deux de l'architecture. La première tient des années, la seconde quelques semaines. Publier la seconde
+dans un plugin trimestriel la rend fausse en silence, et rend fausses les stories écrites dessus. Un
+plugin `pdp-architecture` qui descend au chemin de fichier pourrit sans que personne ne le voie.
+
+Conséquence de conception : `pdp-po-workbench` clone les dépôts du périmètre du PO dans `./local-repos`
+de son projet (ignoré par git) et y lance une synchronisation, qui produit chez lui un `knowledge/`
+restreint et à jour. Ce `knowledge/` local est la seule source légitime des faits périssables.
+
+Deux règles à honorer dès maintenant, parce qu'elles sont gratuites au départ et coûteuses ensuite :
+
+- La mécanique de checkout et de synchronisation de `pdp-po-workbench` est un `bin/` **autonome**, sur le
+  modèle de `bin/smt-repos.ps1`, jamais de la prose diluée dans un `SKILL.md` de rédaction. Le jour où
+  `pdp-code-crosscheck` arrive, il en copie le dossier, duplication assumée comme entre les deux `smt-*`.
+- Le manifeste des dépôts (slug, URL git, branche, zones à scanner) vit dans **`pdp-po-workbench`**, pas
+  dans `pdp-architecture`. Un plugin installé ne lit rien hors de son dossier : `pdp-architecture` porte
+  la carte éditoriale des applications, le workbench porte la donnée opérationnelle qui lui sert à
+  l'exécution. Les deux peuvent dériver, la dérive est bénigne.
+
+`pdp-architecture` n'a ni script, ni hook, ni serveur MCP, donc il fonctionne aussi sur macOS et Linux,
+contrairement aux plugins `smt-*`.
 
 ## Ce qui ne voyage pas dans un plugin, et comment c'est compensé
 
