@@ -1,6 +1,19 @@
 # Accès des profils non-dev
 
-Note de cadrage. Aucune implémentation à ce stade ; le pilote reste à mener.
+**Document historique, conservé pour la trace de l'arbitrage.** La piste retenue (Claude Code hors
+VSCode) a été mise en oeuvre le 2026-08-20, sous une forme que ce cadrage n'avait pas anticipée : un
+**plugin** installé dans le projet de la personne, et non ce dépôt recopié sur son poste. Deux
+conséquences pour la lecture de ce qui suit.
+
+- Là où le document parle d'installer l'assistant, de `repos/` ou du script de bootstrap, la procédure
+  actuelle est [demarrage-non-dev.md](demarrage-non-dev.md) : `/plugin marketplace add` puis
+  `/plugin install`. Le dossier `repos/` et `scripts/bootstrap.ps1` n'existent plus.
+- Le point « la source unique : hors de ce dépôt, les instructions sont une copie, et une copie dérive »
+  reste vrai mais change de nature : le plugin est distribué depuis ce dépôt et versionné, donc la copie
+  est traçable et se met à jour par `/plugin update`. La dérive redevient un problème de version, pas de
+  recopie manuelle.
+
+Note de cadrage d'origine, du 2026-07-29 au 2026-08-19 :
 
 ## Besoin
 

@@ -1,7 +1,7 @@
 # Démarrage pour un profil non-dev
 
-Guide d'installation de l'assistant SMT sur un poste sans VSCode. Environ 30 minutes, une seule
-fois. Aucune connaissance de git n'est requise : un script fait le travail.
+Guide d'installation de l'outillage SMT sur un poste sans VSCode. Environ 20 minutes, une seule fois.
+L'outillage n'est plus un projet à récupérer : c'est un **plugin Claude Code** à installer.
 
 Cadrage et justification du choix : [acces-non-dev.md](acces-non-dev.md).
 
@@ -12,133 +12,121 @@ Cadrage et justification du choix : [acces-non-dev.md](acces-non-dev.md).
 | Quoi | Auprès de qui | Pour quoi |
 |---|---|---|
 | Un siège Claude | Équipe IT / licences | Utiliser Claude Code |
-| L'accès au projet GitLab de l'assistant (`pdp/ai`) | L'architecte | Récupérer l'assistant |
-| L'accès au dépôt de specs (`pdp/smt/sln-smt-spec-owner`) | Le PO propriétaire du corpus | Lire les specs et le glossaire |
-| Un compte GitLab avec accès aux deux dépôts de code SMT | Owner des dépôts | Lire le code |
-| Un compte Atlassian Amer Sports | Déjà en place en général | Lire Jira (et Confluence en lecture) |
-| Accès réseau à `gitlab.amersports.com` | VPN si hors site | Cloner et rafraîchir specs et code |
+| L'accès au projet GitLab `pdp/ai/sln-smt-assistant` | L'architecte | Récupérer le plugin |
+| L'accès au dépôt de specs `pdp/smt/sln-smt-spec-owner` | Le PO propriétaire du corpus | Lire les specs et le glossaire |
+| Un compte Atlassian Amer Sports | Déjà en place en général | Lire Jira |
+| Accès réseau à `gitlab.amersports.com` | VPN si hors site | Récupérer le plugin, puis les specs |
 
-## Où vit l'assistant
-
-Le projet est publié sur `gitlab.amersports.com`, dans le groupe **`pdp/ai`** :
-<https://gitlab.amersports.com/pdp/ai/sln-smt-assistant>, branche `main`.
-
-Deux conséquences pratiques :
-
-- L'accès au projet doit vous être donné avant de commencer. Le demander en même temps que les autres
-  prérequis, sinon l'étape 3 échoue sur un « repository not found ».
-- Un **seul compte** suffit : le même GitLab sert pour l'assistant (étape 3), pour les specs et pour le
-  code SMT (étape 4). Les identifiants sont demandés une fois puis mémorisés. Il faut en revanche
-  l'accès réseau à `gitlab.amersports.com` (VPN si hors site) dès l'étape 3.
+Un **seul compte GitLab** sert pour tout : le plugin et les specs. Les identifiants sont demandés une
+fois puis mémorisés.
 
 ## Où vivent les specs
 
-Depuis le 2026-08-19, les spécifications et le glossaire ne sont plus dans Confluence : ils sont
-versionnés en markdown dans le dépôt <https://gitlab.amersports.com/pdp/smt/sln-smt-spec-owner>
-(dossier `solution-overview/`), cloné en local par le bootstrap dans `repos/sln-smt-spec-owner/`.
+Les spécifications et le glossaire sont versionnés en markdown dans
+<https://gitlab.amersports.com/pdp/smt/sln-smt-spec-owner> (dossier `solution-overview/`). Le plugin les
+récupère lui-même, en lecture seule, dans une copie de travail locale.
 
-Ce qui reste publié dans l'espace Confluence `SMT` est une **version synthétique livrée** par le projet
+Ce qui est publié dans l'espace Confluence `SMT` est une **version synthétique livrée** par le projet
 Claude Code du PO. C'est une copie, potentiellement en retard : en cas d'écart, le dépôt git fait foi.
-L'assistant ne lit Confluence que pour ce que le markdown ne porte pas (les deux diagrammes) et n'y
-écrit jamais.
 
 ## Installation
 
 ### 1. Installer Git for Windows
 
-<https://git-scm.com/download/win>. Accepter les options par défaut. Git sert uniquement à récupérer
-le code ; vous n'aurez pas à l'utiliser directement.
+<https://git-scm.com/download/win>. Accepter les options par défaut. Git sert au plugin pour récupérer
+les specs ; vous n'aurez pas à l'utiliser directement, sauf pour la mise à jour décrite plus bas.
 
 ### 2. Installer Claude Code
 
 Application desktop Windows. Se connecter avec le compte fourni par l'IT.
 
-### 3. Récupérer le projet de l'assistant
+### 3. Créer un dossier de travail
 
 Ouvrir PowerShell (menu Démarrer, taper « PowerShell ») et coller :
 
 ```powershell
-cd $HOME\Projects        # ou le dossier de votre choix ; le creer s'il n'existe pas
-git clone https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
-cd sln-smt-assistant
+New-Item -ItemType Directory -Force $HOME\Projects\smt-questions
 ```
 
-Une fenêtre demande vos identifiants **GitLab**. Ils sont ensuite mémorisés. Si la réponse est
-« repository not found », c'est que l'accès au projet ne vous a pas encore été donné : le
-message est le même que pour un dépôt inexistant.
+Ce dossier n'a pas besoin de contenir quoi que ce soit : c'est simplement l'endroit depuis lequel vous
+poserez vos questions. Le plugin y déposera sa copie de travail des specs, dans un sous-dossier
+`.smt-tmp`.
 
-### 4. Lancer le bootstrap
+### 4. Installer le plugin
 
-```powershell
-.\scripts\bootstrap.ps1
+Ouvrir ce dossier dans Claude Code, puis taper :
+
+```
+/plugin marketplace add https://gitlab.amersports.com/pdp/ai/sln-smt-assistant.git
+/plugin install smt-spec-quality@sln-smt
 ```
 
-Le script vérifie git, clone les trois dépôts SMT dans `repos/` (le dépôt de specs et les deux dépôts
-de code), et contrôle qu'ils sont à jour et intacts. Il ne modifie jamais rien sur GitLab. Vos
-identifiants **GitLab** ont déjà été mémorisés à l'étape 3 ; ils resservent tels quels pour les trois
-dépôts.
+Si la réponse demande `/reload-plugins`, le lancer.
 
-Si PowerShell refuse d'exécuter le script (politique d'exécution), lancer une seule fois :
+Une fenêtre peut demander vos identifiants **GitLab**. Si la réponse est « repository not found »,
+c'est que l'accès au projet ne vous a pas encore été donné : GitLab renvoie ce message aussi bien pour
+un dépôt inexistant que pour un dépôt sans droits.
 
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-
-Le script se termine par un bilan. Tout doit être en `OK` avant de continuer.
+Les profils techniques installent en plus `smt-code-crosscheck@sln-smt`, qui compare les specs au code.
+Sans accès aux dépôts de code, il ne sert à rien.
 
 ### 5. Connecter Jira
 
-Ouvrir le dossier `sln-smt-assistant` dans Claude Code, puis :
+```
+/mcp
+```
 
-1. Approuver le serveur MCP du projet quand il est proposé.
-2. Taper `/mcp`, choisir `atlassian`, s'authentifier dans le navigateur avec le compte Atlassian
-   Amer Sports.
+Choisir le serveur `atlassian` du plugin, puis s'authentifier dans le navigateur avec le compte
+Atlassian Amer Sports. Les jetons restent sur votre poste.
 
-Cette connexion sert à Jira, et à Confluence en lecture seule. Les specs, elles, sont lues dans
-`repos/sln-smt-spec-owner/` : elles restent accessibles même si l'authentification Atlassian échoue.
+Cette étape ne sert qu'à désigner une story par sa clé (`SMT-123`). Les specs, elles, sont lues dans la
+copie de travail : elles restent accessibles même si l'authentification Atlassian échoue.
 
 ### 6. Vérifier
 
-Taper `/term-check Size Grid Code`. L'assistant doit répondre en citant
-`repos/sln-smt-spec-owner/solution-overview/glossary.md` avec un numéro de ligne. S'il répond sans
-aucune source, quelque chose n'est pas branché.
+```
+/smt-spec-quality:term-check Size Grid Code
+```
+
+Au premier lancement, le plugin annonce qu'il récupère les specs, puis répond en citant
+`solution-overview/glossary.md` avec un numéro de ligne. S'il répond sans aucune source, quelque chose
+n'est pas branché.
 
 ## Usage courant
 
-Les commandes disponibles :
+Les commandes du plugin `smt-spec-quality` :
 
 | Commande | Ce qu'elle fait |
 |---|---|
-| `/term-check <fichier de spec, story ou texte>` | Vérifie la cohérence des termes avec le glossaire |
-| `/spec-readiness <fichier de spec, epic ou story>` | Dit si une spec est prête pour le dev |
-| `/spec-vs-code <fichier de spec ou clé Jira>` | Compare la spec au code réellement écrit |
-| `/doc-freshness <fichier de spec>` | Liste ce que le code contredit dans une spec |
-| `/refactor-proposal <zone>` | Propose des refactorings, sans les appliquer |
-| `/explore-code <question>` | Explore le code et rend une synthèse sourcée |
+| `/smt-spec-quality:term-check <fichier de spec, story ou texte>` | Vérifie la cohérence des termes avec le glossaire |
+| `/smt-spec-quality:spec-readiness <fichier de spec, epic ou story>` | Dit si une spec est prête pour le dev |
 
-Vous pouvez aussi poser vos questions en langage naturel. Pour désigner une spec, le plus simple est son
-chemin, par exemple
+Le préfixe `smt-spec-quality:` est imposé par Claude Code pour les commandes venant d'un plugin. Vous
+pouvez aussi poser vos questions en langage naturel. Pour désigner une spec, le plus simple est son
+chemin dans le corpus, par exemple
 `solution-overview/functional-specifications/1-generic-properties.md`.
 
-### Rafraîchir avant toute question
+### Garder les specs à jour
 
-Le contenu de `repos/` est une copie locale, figée au moment du clone : les specs comme le code. Une
-copie périmée fait répondre faux, sans aucun signal d'alerte. Au début de chaque session :
+La copie de travail est figée au moment où le plugin l'a récupérée. Une copie périmée fait répondre
+faux, sans aucun signal. Le plugin contrôle donc la fraîcheur avant chaque réponse, et **refuse de
+conclure** sur une copie en retard, y compris pour une simple question de vocabulaire.
+
+Il ne met pas à jour de lui-même, par principe : il est en lecture seule. Quand il signale un retard :
 
 ```powershell
-.\scripts\bootstrap.ps1 -Update
+git -C $HOME\Projects\smt-questions\.smt-tmp\sln-smt-spec-owner pull --ff-only
 ```
 
-Toutes les commandes contrôlent la fraîcheur d'elles-mêmes et refusent de conclure sur une copie
-périmée, y compris pour une simple question de vocabulaire. Le script reste le moyen le plus simple de
-remettre tout à niveau d'un coup.
+Le chemin exact figure dans le message du plugin. Pour mettre à jour le plugin lui-même, quand
+l'architecte annonce une nouvelle version : `/plugin update smt-spec-quality`.
 
-## Ce que l'assistant ne fait pas
+## Ce que l'outillage ne fait pas
 
 Il ne crée ni ne modifie aucune issue Jira, aucune page Confluence, aucun fichier de spec et aucun
-fichier de code : ce n'est pas une préférence, les outils d'écriture correspondants sont bloqués dans la
-configuration du projet. Ses sorties sont des propositions, à appliquer par un humain - une correction de
-spec est à porter par le PO dans son propre projet.
+fichier de code : ce n'est pas une préférence, les outils d'écriture correspondants sont bloqués par le
+plugin. Ses sorties sont des propositions, à appliquer par un humain ; une correction de spec est à
+porter par le PO dans son propre projet.
 
 Il s'arrête aussi volontairement quand une spec est floue, ambiguë ou contradictoire, au lieu de
 deviner. Une réponse « je ne peux pas conclure, voici ce qui manque » est un résultat, pas une panne.
@@ -148,10 +136,11 @@ deviner. Une réponse « je ne peux pas conclure, voici ce qui manque » est un 
 | Symptôme | Cause probable | Quoi faire |
 |---|---|---|
 | `git est introuvable` | Étape 1 sautée, ou fenêtre ouverte avant l'installation | Installer git, rouvrir PowerShell |
-| `repository not found` à l'étape 3 | Accès au projet GitLab `pdp/ai/sln-smt-assistant` non accordé (ou VPN absent) | Le demander à l'architecte ; GitLab renvoie ce message aussi bien pour un dépôt inexistant que pour un dépôt sans droits |
-| `Clone echoue` sur `sln-smt-spec-owner` | Accès au dépôt de specs non accordé | Le demander au PO propriétaire du corpus ; sans lui, l'assistant n'a ni specs ni glossaire |
-| `Clone echoue` / `fetch impossible` | VPN coupé, ou droits GitLab manquants | Vérifier le VPN, puis les droits sur les trois dépôts |
-| `Working tree non vide` | Un fichier de `repos/` a été modifié en local | Ne rien éditer sous `repos/` ; demander de l'aide pour remettre à plat |
-| L'assistant ne voit pas Jira | Étape 5 non faite ou OAuth expiré | Refaire `/mcp` sur `atlassian` |
-| Réponses sans `fichier:ligne` | `repos/` vide | Relancer `.\scripts\bootstrap.ps1` |
-| L'assistant cite Confluence pour une règle | Réflexe de l'ancien câblage | Lui demander la source dans `repos/sln-smt-spec-owner/` ; Confluence n'est plus la référence |
+| Le marketplace refuse de s'ajouter | Accès à `pdp/ai/sln-smt-assistant` non accordé, ou VPN absent | Le demander à l'architecte, vérifier le VPN |
+| Les commandes `/smt-spec-quality:...` n'apparaissent pas | Plugin installé mais non rechargé | `/reload-plugins`, puis `/plugin list` pour vérifier |
+| Le plugin ne trouve pas les specs | Accès au dépôt de specs non accordé | Le demander au PO ; sans lui, ni specs ni glossaire |
+| `fetch impossible` | VPN coupé, ou droits GitLab manquants | Vérifier le VPN, puis les droits |
+| Le plugin annonce un retard et s'arrête | Comportement normal | Lancer le `git pull` ci-dessus, puis relancer la commande |
+| Il ne voit pas Jira | Étape 5 non faite ou OAuth expiré | Refaire `/mcp` sur `atlassian` |
+| Réponses sans `fichier:ligne` | Copie de travail absente | Relancer la commande ; le plugin doit annoncer la récupération |
+| Il cite Confluence pour une règle | Réflexe de l'ancien câblage | Lui demander la source dans le corpus git ; Confluence n'est plus la référence |

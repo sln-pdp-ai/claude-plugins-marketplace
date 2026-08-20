@@ -1,8 +1,11 @@
 # Distribution en plugins (marketplace interne)
 
-Comment l'outillage SMT est publié pour des personnes qui n'ont pas ce dépôt sur leur poste : le spec
-owner, un dev dans son checkout de code. Note de maintenance ; l'usage côté utilisateur est dans les
-`README.md` des plugins.
+Comment l'outillage SMT est publié pour les personnes qui l'utilisent : le spec owner sur son corpus, un
+dev dans son checkout de code. Note de maintenance ; l'usage côté utilisateur est dans les `README.md`
+des plugins.
+
+Ce dépôt ne sert plus qu'à ça. Il n'est le poste de travail de personne : ni corpus de specs, ni
+checkout de code, ni `repos/`, ni script de provisionnement. Voir [../CLAUDE.md](../CLAUDE.md).
 
 ## Ce qui est publié
 
@@ -38,8 +41,8 @@ leurs owners.
 | `.mcp.json` (serveur Atlassian) | oui | un `.mcp.json` par plugin, identique à celui de ce dépôt. Indispensable : sans lui, les skills réclament une story Jira qu'ils ne peuvent pas lire. L'authentification reste OAuth par utilisateur (`/mcp`) |
 | `CLAUDE.md` | non, un `CLAUDE.md` de plugin n'est pas chargé comme contexte de projet | noyau injecté par le hook `SessionStart`, détail dans le skill `policy` |
 | `permissions.deny` | non, un plugin ne peut livrer que les clés `agent` et `subagentStatusLine` de `settings.json` | hook `PreToolUse` qui sort en code 2 (blocage inconditionnel, message rendu au modèle) |
-| Les clones de `repos/` | non | résolution dynamique, clone de travail à la demande |
-| Chemins `repos/<dépôt>` en dur | non applicable | `bin/smt-repos.ps1`, voir ci-dessous |
+| Les dépôts eux-mêmes (corpus, code) | non | résolution dynamique, clone de travail à la demande |
+| Chemins de dépôt en dur | interdits | `bin/smt-repos.ps1`, voir ci-dessous |
 
 ## Résolution des dépôts
 
@@ -96,8 +99,10 @@ Les `hooks/hooks.json` ne sont **pas** identiques : ils diffèrent par la valeur
   évolution : sans bump, les postes déjà installés gardent leur copie en cache.
 - `claude plugin validate .\plugins\<nom>` avant de pousser, et `claude plugin validate .` pour le
   marketplace.
-- Essai sans installer : `claude --plugin-dir .\plugins\smt-spec-quality`, puis `/reload-plugins` après
-  chaque modification.
+- **Le test réel se fait dans un vrai projet**, jamais dans cet atelier : un clone de travail du corpus
+  pour `smt-spec-quality`, un checkout de `sln-smt-backend` pour `smt-code-crosscheck`. Depuis un tel
+  dossier, `claude --plugin-dir <chemin absolu du plugin>` évite de passer par le marketplace, et
+  `/reload-plugins` recharge après chaque modification.
 - Les scripts se testent seuls, hors Claude Code :
   `powershell -File plugins\smt-spec-quality\bin\smt-repos.ps1 -Action check -Need all`.
 
@@ -109,6 +114,11 @@ Les `hooks/hooks.json` ne sont **pas** identiques : ils diffèrent par la valeur
 - **Le blocage Atlassian est actif pour toute la session** dès que le plugin est activé, pas seulement
   pendant l'usage d'un skill SMT. Un hook n'a aucune notion de « quel skill est en cours ».
 - **`git commit` n'est pas bloquable par répertoire** : la protection porte sur `Edit` / `Write`.
+- **La mise à jour d'une copie de travail périmée reste manuelle.** `-Action ensure` clone ce qui manque
+  mais ne rafraîchit rien, par principe de lecture seule. L'utilisateur doit lancer lui-même un
+  `git -C <chemin> pull --ff-only`. Pour un profil non-dev, c'est la seule commande git qu'il reste à
+  taper : une action `-Action update` explicite, ou une invite plus précise dans le message de fail-fast,
+  lèverait ce point.
 - **Deux plugins actifs en même temps** injectent deux fois la doctrine au démarrage, évaluent deux fois
   chaque écriture, et déclarent deux serveurs MCP Atlassian équivalents. Sans effet fonctionnel, mais du
   contexte et une authentification en double.

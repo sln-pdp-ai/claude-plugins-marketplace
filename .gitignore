@@ -1,7 +1,4 @@
-# Checkouts locaux en lecture seule des dépôts SMT (non suivis ici)
-repos/
-
-# Clones de travail provisionnés par les plugins SMT (voir plugins/*/README.md)
+# Clones de travail que les scripts des plugins peuvent provisionner lors d'un test local
 .smt-tmp/
 
 # Réglages Claude Code propres à chaque utilisateur (approbations MCP, permissions locales)
