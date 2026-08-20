@@ -92,9 +92,9 @@ commit de scaffolding chacun (`CI - Initial commit` du 2026-07-27, aucun code m�
 
 Le dépôt est versionné sur `gitlab.amersports.com`, projet
 `pdp/ai/claude-plugins-marketplace`, branche `main` (remote `origin`). Y commiter et y pousser
-est l'usage normal, sur demande. Un remote `github` subsiste vers l'ancien hébergement
-(<https://github.com/SLNAS/sln-smt-assistant>, qui garde l'ancien nom) : ne pas y pousser sans demande
-explicite.
+est l'usage normal, sur demande. L'ancien remote `github`, vers l'hébergement historique
+(<https://github.com/SLNAS/sln-smt-assistant>), a été supprimé le 2026-08-20 : ce dépôt ne vit plus
+que sur GitLab interne.
 
 Le dépôt s'appelait `sln-smt-assistant` jusqu'au 2026-08-20. Ce nom désignait le produit alors que le
 dépôt est l'atelier, ce qui a entretenu la confusion avec un poste de travail. GitLab redirige l'ancien
