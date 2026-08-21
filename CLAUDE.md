@@ -34,6 +34,7 @@ poste de travail. Chez l'utilisateur, c'est `bin/smt-repos.ps1` qui résout et c
 |---|---|
 | `.claude-plugin/marketplace.json` | le marketplace `pdp-ai` : une entrée par plugin, nom, source, version |
 | `plugins/pdp-architecture/` | plugin PDP, savoir d'architecture stable : `ecosystem-map`, `sbus`, `api-exposure-auth`, `feature-flags`, `structured-logging`, `persistence`. Skills purs, aucune mécanique |
+| `plugins/pdp-po-workbench/` | plugin PDP, atelier de rédaction du PO : dix skills (livrables Jira / Confluence, ideation, lint, synchro), sous-agent `codebase-syncer`, `bin/` de résolution des checkouts, trois hooks |
 | `plugins/smt-spec-quality/` | plugin SMT, qualité des specs : `policy`, `term-check`, `spec-readiness` |
 | `plugins/smt-code-crosscheck/` | plugin SMT, recoupement : `policy`, `spec-vs-code`, `doc-freshness`, `refactor-proposal`, `explore-code`, sous-agent `code-explorer` |
 | `docs/plugins.md` | note de maintenance : duplication, résolution des dépôts, versionnement, limites |
@@ -46,9 +47,11 @@ spécifique à SMT au niveau du dépôt ; SMT n'est spécifique qu'au contenu de
 
 Chaque plugin `smt-*` contient : `.claude-plugin/plugin.json`, `.mcp.json` (serveur Atlassian),
 `skills/`, `hooks/hooks.json`, `bin/` (trois scripts PowerShell), `README.md`, et pour
-`smt-code-crosscheck` un `agents/`. Un futur plugin non-SMT n'a aucune raison de reprendre cette
-structure telle quelle : elle sert la doctrine SMT (fraîcheur des clones, résolution des dépôts, Jira),
-pas le fait d'être un plugin.
+`smt-code-crosscheck` un `agents/`. Un plugin non-SMT n'a aucune raison de reprendre cette structure
+telle quelle : elle sert la doctrine SMT (fraîcheur des clones, résolution des dépôts, Jira), pas le fait
+d'être un plugin. `pdp-architecture` n'en reprend rien, `pdp-po-workbench` en reprend le `bin/` et les
+hooks parce qu'il lit lui aussi des dépôts qui ne sont pas les siens, mais **pas** le `.mcp.json` : il
+n'interroge pas Jira, et il n'y écrit surtout pas.
 
 ## Règles de fabrication
 
@@ -69,7 +72,17 @@ sans signal visible ici.
   systèmes autoritaires. Un skill peut illustrer la forme, jamais tenir l'annuaire.
 - **Un skill de savoir ne pinne pas de modèle.** Un `model:` dans un skill de `pdp-architecture`
   dégraderait la session de qui le consulte : c'est du contexte, pas une tâche. Le pinning reste réservé
-  aux skills qui exécutent un travail borné.
+  aux skills qui exécutent un travail borné, comme ceux de `pdp-po-workbench`.
+- **Un plugin ne porte jamais d'état muté à l'exécution.** Un manifeste statique (slug, URL git, branche,
+  zones) voyage très bien dans un `bin/`. Un compteur, un SHA de dernière synchro, un cache : jamais. Un
+  plugin installé est une copie dans un cache, écrasée à chaque bump de version, donc l'état écrit là
+  disparaît sans bruit et le run suivant repart de zéro en croyant continuer. L'état vit chez
+  l'utilisateur, à côté de ce qu'il décrit (pour le workbench, `knowledge/core/sync-state.md`).
+- **Une description de skill ne contient pas de `: ` (deux-points suivi d'une espace).** Le frontmatter
+  est du YAML : dans un scalaire non quoté, cette séquence casse le parsing, et le skill se charge
+  **avec des métadonnées vides**, donc ne se déclenche plus jamais. Silencieux à l'usage, visible
+  seulement par `claude plugin validate`. Trois skills du workbench sont tombés dessus. Reformuler avec
+  une virgule ou « à savoir ».
 - **Aucun chemin supposé.** Un skill de plugin ne référence jamais `repos/<dépôt>` ni un chemin absolu.
   Les dépôts se résolvent par `bin/smt-repos.ps1`. Un chemin en dur marche sur ce poste et nulle part
   ailleurs.

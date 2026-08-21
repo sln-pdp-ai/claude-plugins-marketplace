@@ -13,6 +13,12 @@
       "version": "0.3.1"
     },
     {
+      "name": "pdp-po-workbench",
+      "description": "Atelier de redaction du PO sur le domaine PDP : user stories et studies Jira, pages Confluence, ideation, lint des livrables, et la synchro qui regenere en local le savoir perissable a partir du code des services. Livrables en Markdown relu et versionne, aucune ecriture dans Atlassian. Necessite Windows, git et l'acces GitLab aux depots des services.",
+      "source": "./plugins/pdp-po-workbench",
+      "version": "0.1.0"
+    },
+    {
       "name": "smt-spec-quality",
       "source": "./plugins/smt-spec-quality",
       "description": "Qualite des specs SMT : coherence terminologique contre le glossaire et check-list fail-fast prete pour le dev. Lit le corpus de specs versionne et, pour cibler une story, Jira ; n'a pas besoin du code.",
