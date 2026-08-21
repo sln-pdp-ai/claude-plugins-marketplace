@@ -1,7 +1,7 @@
 {
   "name": "pdp-po-workbench",
   "description": "Atelier de redaction du PO sur le domaine PDP Salomon / Amer Sports : user stories et studies Jira, pages Confluence, ideation, lint des livrables, et la synchro qui regenere en local le savoir perissable a partir du code des services. Les livrables sont du Markdown relu et versionne, jamais une ecriture directe dans Atlassian.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Architecture PDP - Amer Sports"
   },

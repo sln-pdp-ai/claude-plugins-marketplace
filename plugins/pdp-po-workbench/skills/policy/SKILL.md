@@ -82,6 +82,10 @@ Interprétation des verdicts :
   chemin de handler.
 - `BRANCHE_KO` : la branche du manifeste n'existe pas sur ce dépôt. Le signaler ; le manifeste du plugin
   est à corriger, ce n'est pas à contourner par une autre branche choisie au hasard.
+- `ARBRE_KO` : clone de travail incomplet, typiquement un `ensure` interrompu au checkout. Les objets
+  sont là et `HEAD` est sur la bonne cible, mais des fichiers manquent sur le disque : ce verdict existe
+  précisément parce que ce cas répondait `A_JOUR`. Ne rien ancrer et ne pas synchroniser dessus.
+  Proposer de supprimer le dossier du clone, puis `-Action ensure -Project <slug>`.
 - `ABSENT` : annoncer ce qui va être cloné et où, puis `-Action ensure -Project <slug>`. Si le script
   signale que `.gitignore` gagnerait à ignorer `local-repos`, proposer d'abord cette édition : sans elle
   les clones partent dans le cache utilisateur.

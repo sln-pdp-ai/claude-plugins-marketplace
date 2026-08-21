@@ -16,7 +16,10 @@
              disque, aucun acces reseau.
     paths  : ou se trouve chaque checkout sur ce poste. Aucun acces reseau.
     check  : fetch + verdict de fraicheur. Code de retour 1 si un checkout bloque.
+             Verdicts : A_JOUR, EN_RETARD, FETCH_KO, BRANCHE_KO, ARBRE_KO, ABSENT.
     ensure : clone les checkouts manquants dans local-repos/ du projet courant.
+             Le clone force core.longpaths : sans elle le checkout tombe sur les
+             chemins longs de ces depots et laisse un working tree amputee.
     update : rafraichit (git pull --ff-only) les seuls clones de travail geres par
              le plugin. Ne touche jamais un depot gere par l'utilisateur (projet
              courant, depot frere, PDP_REPOS_DIR) : celui-la reste le sien.
@@ -100,6 +103,7 @@ switch ($Action) {
             Write-Output ''
             Write-Output "ATTENTION : $problems checkout(s) non exploitable(s) en l'etat. Ne rien affirmer sur un code absent ou perime : une story ancree sur un handler qui n'existe plus est fausse sans le dire."
             Write-Output "Clone de travail en retard : proposer -Action update. Depot gere par vous : rafraichir a la main, git -C <chemin> fetch. Checkout absent : -Action ensure."
+            Write-Output "ARBRE_KO : clone de travail incomplet, ni update ni synchro dessus. Supprimer le dossier puis -Action ensure."
         }
         if ($gitignoreHint) {
             Write-Output ''
@@ -116,18 +120,67 @@ switch ($Action) {
             $parent = Split-Path -Parent $r.ExpectedPath
             if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
             Write-Output ("{0,-28} CLONE EN COURS   {1}" -f $r.Name, $r.ExpectedPath)
-            & git clone --quiet --branch $r.Branch $r.Url $r.ExpectedPath
-            if ($LASTEXITCODE -ne 0) {
-                # La branche du manifeste peut ne pas exister sur ce depot : on
-                # clone quand meme, le verdict BRANCHE_KO le dira ensuite.
-                & git clone --quiet $r.Url $r.ExpectedPath
+
+            # core.longpaths : ces depots portent des chemins de plus de 260
+            # caracteres (post-build-scripts/<date>_<ticket>_<libelle>.ts). Sans
+            # cette option, git telecharge tous les objets puis echoue au
+            # checkout, et laisse un working tree amputee que HEAD declare
+            # pourtant a jour.
+            #
+            # --config et non -c : il faut que l'option soit ECRITE dans la config
+            # du depot cree, pas seulement portee par l'invocation du clone. Sinon
+            # le clone reussit mais tous les git status / git diff suivants ne
+            # savent pas lire ces chemins, rapportent les fichiers comme modifies,
+            # et un clone sain se fait signaler comme ampute. --config prend effet
+            # avant le checkout, il couvre donc aussi le clone lui-meme.
+            # Jamais en config globale : ce reglage n'appartient qu'a nos clones.
+            $clone = @('clone', '--quiet', '--config', 'core.longpaths=true')
+            $err = & git @clone '--branch' $r.Branch $r.Url $r.ExpectedPath 2>&1
+            $code = $LASTEXITCODE
+
+            if ($code -ne 0 -and -not (Test-Path -LiteralPath (Join-Path $r.ExpectedPath '.git'))) {
+                # Rien n'a ete ecrit : la branche du manifeste n'existe
+                # probablement pas sur ce depot. On clone la branche par defaut,
+                # le verdict BRANCHE_KO le dira ensuite.
+                $err = & git @clone $r.Url $r.ExpectedPath 2>&1
+                $code = $LASTEXITCODE
             }
-            if ($LASTEXITCODE -eq 0) {
+
+            # Un clone peut sortir en echec apres avoir ecrit le depot : les
+            # objets sont la, le checkout a echoue. Recloner par dessus echouerait
+            # sur "destination path already exists" et masquerait la vraie cause,
+            # d'ou le test de .git ci-dessus. Ici on verifie ce qui compte
+            # vraiment : le working tree est-il complet.
+            # core.longpaths force ici aussi : sans lui ce status rapporterait des
+            # fichiers modifies qu'il n'arrive simplement pas a lire, et ferait
+            # passer un clone sain pour ampute.
+            $incomplete = $false
+            if (Test-Path -LiteralPath (Join-Path $r.ExpectedPath '.git')) {
+                $st = Invoke-Git @('-c', 'core.longpaths=true', '-C', $r.ExpectedPath, 'status', '--porcelain')
+                $incomplete = [bool]($st.Ok -and $st.Out)
+            }
+
+            if ($code -eq 0 -and -not $incomplete) {
                 Write-Output ("{0,-28} CLONE OK         {1}" -f $r.Name, $r.ExpectedPath)
+            }
+            elseif ($incomplete) {
+                $problems++
+                Write-Output ("{0,-28} CLONE INCOMPLET  working tree amputee dans {1}" -f $r.Name, $r.ExpectedPath)
+                Write-Output ("{0,-28}                  ne pas synchroniser dessus : supprimer le dossier et relancer -Action ensure" -f '')
+                $first = @($err | Where-Object { $_ -match 'Filename too long|unable to' } | Select-Object -First 1)
+                if ($first) {
+                    Write-Output ("{0,-28}                  cause git : {1}" -f '', $first[0])
+                    Write-Output ("{0,-28}                  chemin trop long ? raccourcir la racine du depot de savoir." -f '')
+                }
             }
             else {
                 $problems++
-                Write-Output ("{0,-28} CLONE ECHOUE     verifier le VPN et les droits GitLab sur {1}" -f $r.Name, $r.Url)
+                # Ne pas accuser le VPN sans savoir : la cause reelle est dans la
+                # sortie de git, et c'est elle qui fait gagner du temps.
+                Write-Output ("{0,-28} CLONE ECHOUE     {1}" -f $r.Name, $r.Url)
+                $lines = @($err | Where-Object { "$_".Trim() } | Select-Object -Last 3)
+                foreach ($l in $lines) { Write-Output ("{0,-28}                  {1}" -f '', $l) }
+                Write-Output ("{0,-28}                  si l'acces est en cause : VPN, puis droits de lecture GitLab." -f '')
             }
         }
     }

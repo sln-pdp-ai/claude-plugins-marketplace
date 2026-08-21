@@ -202,7 +202,14 @@ function Get-PdpCloneRoot {
 
     if (-not (Test-IsGitRepo -Path $root)) { return $local }
 
-    $null = & git -C $root check-ignore -q 'local-repos' 2>$null
+    # Le slash final est obligatoire dans le chemin interroge. Le motif canonique
+    # d'un .gitignore est 'local-repos/', qui ne matche que des repertoires, et
+    # git ne peut pas savoir que 'local-repos' en est un tant qu'il n'existe pas
+    # sur le disque. Or il n'existe justement pas encore quand -Action ensure
+    # doit decider ou cloner : on repliait donc sur %LOCALAPPDATA% alors que le
+    # .gitignore etait correct. Interroger 'local-repos/' repond bien pour les
+    # deux formes de motif, avec ou sans slash, repertoire present ou absent.
+    $null = & git -C $root check-ignore -q 'local-repos/' 2>$null
     if ($LASTEXITCODE -eq 0) { return $local }
 
     if ($env:LOCALAPPDATA) { return (Join-Path $env:LOCALAPPDATA 'pdp-workbench\repos') }
@@ -219,7 +226,9 @@ function Test-PdpGitignoreAdvice {
     param([string]$Cwd)
     $root = Get-PdpProjectRoot -Cwd $Cwd
     if (-not (Test-IsGitRepo -Path $root)) { return $null }
-    $null = & git -C $root check-ignore -q 'local-repos' 2>$null
+    # Meme motif a slash final que Get-PdpCloneRoot : les deux tests doivent
+    # repondre pareil, sinon l'astuce s'affiche alors que le .gitignore est bon.
+    $null = & git -C $root check-ignore -q 'local-repos/' 2>$null
     if ($LASTEXITCODE -eq 0) { return $null }
     return (Join-Path $root '.gitignore')
 }
@@ -308,18 +317,37 @@ function Get-PdpTargetRef {
 function Test-PdpFreshness {
     <#
         Rend un verdict par checkout : A_JOUR, EN_RETARD, FETCH_KO, BRANCHE_KO,
-        ABSENT. Aucune mise a jour n'est faite ici.
+        ARBRE_KO, ABSENT. Aucune mise a jour n'est faite ici.
 
-        Le working tree sale n'est PAS un verdict bloquant, contrairement aux
-        plugins SMT : le savoir est reconstruit depuis la reference distante
-        (git show <ref>:<fichier>), pas depuis les fichiers du disque. Un dev qui
-        a des modifications en cours peut faire tourner la synchro sans les
-        exposer dans le savoir.
+        Le working tree sale n'est PAS un verdict bloquant sur un depot que
+        l'utilisateur gere, contrairement aux plugins SMT : le savoir est
+        reconstruit depuis la reference distante (git show <ref>:<fichier>), pas
+        depuis les fichiers du disque. Un dev qui a des modifications en cours
+        peut faire tourner la synchro sans les exposer dans le savoir.
+
+        Sur un clone de travail gere par le plugin, en revanche, un tree sale n'a
+        aucune cause legitime : personne n'y travaille. C'est la signature d'un
+        clone interrompu, typiquement un checkout tombe sur des chemins trop
+        longs sous Windows. Ce cas rendait A_JOUR sans rien signaler, parce que
+        les objets sont bien la et que HEAD est bien sur la cible : seuls les
+        fichiers manquent. -> ARBRE_KO.
     #>
     param([pscustomobject]$Repo, [switch]$NoFetch)
 
     if (-not $Repo.Present) {
         return [pscustomobject]@{ Repo = $Repo; Verdict = 'ABSENT'; Ref = $null; Sha = $null; Detail = "attendu dans $($Repo.ExpectedPath)" }
+    }
+
+    if ($Repo.Managed) {
+        # core.longpaths force : un clone dont la config ne le porte pas (version
+        # anterieure du plugin) verrait ses fichiers a chemin long rapportes comme
+        # modifies alors qu'ils sont bien la. Le verdict doit refleter le disque,
+        # pas une limite de lecture de git.
+        $st = Invoke-Git @('-c', 'core.longpaths=true', '-C', $Repo.Path, 'status', '--porcelain')
+        if ($st.Ok -and $st.Out) {
+            $n = @($st.Out -split "`n" | Where-Object { $_.Trim() }).Count
+            return [pscustomobject]@{ Repo = $Repo; Verdict = 'ARBRE_KO'; Ref = $null; Sha = $null; Detail = "clone de travail incomplet : $n entree(s) divergent de HEAD, working tree non fiable. Recloner : supprimer le dossier puis -Action ensure" }
+        }
     }
 
     if (-not $NoFetch) {

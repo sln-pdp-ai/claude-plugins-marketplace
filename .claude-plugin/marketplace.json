@@ -16,7 +16,7 @@
       "name": "pdp-po-workbench",
       "description": "Atelier de redaction du PO sur le domaine PDP : user stories et studies Jira, pages Confluence, ideation, lint des livrables, et la synchro qui regenere en local le savoir perissable a partir du code des services. Livrables en Markdown relu et versionne, aucune ecriture dans Atlassian. Necessite Windows, git et l'acces GitLab aux depots des services.",
       "source": "./plugins/pdp-po-workbench",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "smt-spec-quality",
